@@ -7,12 +7,12 @@ class ReviewWidget extends StatelessWidget {
   final List<String> photos;
 
   const ReviewWidget({
-    Key? key,
+    super.key,
     required this.reviewerName,
     required this.reviewText,
     required this.rating,
     required this.photos,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -81,7 +81,7 @@ class ReviewWidget extends StatelessWidget {
 class ReviewListWidget extends StatelessWidget {
   final List<Map<String, dynamic>> reviews;
 
-  const ReviewListWidget({Key? key, required this.reviews}) : super(key: key);
+  const ReviewListWidget({super.key, required this.reviews});
 
   @override
   Widget build(BuildContext context) {

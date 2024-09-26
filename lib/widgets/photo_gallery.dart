@@ -7,17 +7,17 @@ class PhotoGallery extends StatelessWidget {
   final List<ImageProvider> localImages; // Para imágenes locales
 
   const PhotoGallery({
-    Key? key,
+    super.key,
     required this.images,
     this.localImages = const [],
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     // Comprobar si hay imágenes disponibles
     if (images.isEmpty && localImages.isEmpty) {
-      return Padding(
-        padding: const EdgeInsets.all(16.0),
+      return const Padding(
+        padding: EdgeInsets.all(16.0),
         child: Center(
           child: Text('No hay imágenes disponibles', style: TextStyle(fontSize: 18)),
         ),
@@ -30,7 +30,7 @@ class PhotoGallery extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: GridView.builder(
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 3, // Número de columnas
           crossAxisSpacing: 8.0,
           mainAxisSpacing: 8.0,
@@ -58,14 +58,14 @@ class PhotoGallery extends StatelessWidget {
                               maxScale: PhotoViewComputedScale.covered * 2, // Permite hacer zoom
                             );
                           },
-                          scrollPhysics: BouncingScrollPhysics(),
+                          scrollPhysics: const BouncingScrollPhysics(),
                           pageController: PageController(initialPage: index), // Muestra la imagen seleccionada
                         ),
                         Positioned(
                           top: 30,
                           right: 20,
                           child: IconButton(
-                            icon: Icon(Icons.close, color: Colors.white, size: 30),
+                            icon: const Icon(Icons.close, color: Colors.white, size: 30),
                             onPressed: () {
                               Navigator.of(context).pop(); // Cierra el diálogo
                             },
@@ -83,7 +83,7 @@ class PhotoGallery extends StatelessWidget {
                 image: combinedImages[index],
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
-                  return Center(
+                  return const Center(
                     child: Icon(Icons.error, color: Colors.red),
                   ); // Icono de error si la imagen no se carga
                 },

@@ -1,13 +1,17 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import '../services/location_service.dart';
-import '../services/place_service.dart';
+
 import '../services/directions_service.dart'; // Importa un servicio para obtener la ruta
+//import '../services/location_service.dart';
+import '../services/place_service.dart';
 import '../widgets/drawer.dart';
 import 'place_detail_screen.dart';
 
 class MapScreen extends StatefulWidget {
+  const MapScreen({super.key});
+
   @override
   _MapScreenState createState() => _MapScreenState();
 }
@@ -47,9 +51,9 @@ class _MapScreenState extends State<MapScreen> {
       markers.removeWhere((marker) => marker.markerId.value == 'user_location');
       markers.add(
         Marker(
-          markerId: MarkerId('user_location'),
+          markerId: const MarkerId('user_location'),
           position: userLocation!,
-          infoWindow: InfoWindow(title: 'Tu ubicación'),
+          infoWindow: const InfoWindow(title: 'Tu ubicación'),
           icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
         ),
       );
@@ -64,7 +68,7 @@ class _MapScreenState extends State<MapScreen> {
     final directions = await DirectionsService.getDirections(userLocation!, destination);
     setState(() {
       routePolyline = Polyline(
-        polylineId: PolylineId('route'),
+        polylineId: const PolylineId('route'),
         points: directions, // La lista de puntos LatLng para la ruta
         color: Colors.blue,
         width: 5,
@@ -128,12 +132,12 @@ class _MapScreenState extends State<MapScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Mapa de Nicaragua')),
+      appBar: AppBar(title: const Text('Mapa de Nicaragua')),
       drawer: _buildDrawer(),
       body: Stack(
         children: [
           GoogleMap(
-            initialCameraPosition: CameraPosition(
+            initialCameraPosition: const CameraPosition(
               target: LatLng(12.1364, -86.2514),
               zoom: 6,
             ),
@@ -154,7 +158,7 @@ class _MapScreenState extends State<MapScreen> {
                 }
               },
               tooltip: 'Centrar en mi ubicación',
-              child: Icon(Icons.my_location),
+              child: const Icon(Icons.my_location),
             ),
           ),
         ],

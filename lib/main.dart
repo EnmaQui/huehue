@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+
 import 'screen/home_screen.dart';
 import 'screen/map_screen.dart';
 
 class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
   @override
   _MyAppState createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
   int _selectedIndex = 0;
-  static List<Widget> _widgetOptions = <Widget>[
+  static final List<Widget> _widgetOptions = <Widget>[
     HomeScreen(),
     MapScreen(),
   ];

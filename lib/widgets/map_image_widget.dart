@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class MapImageWidget extends StatelessWidget {
+  const MapImageWidget({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -10,7 +12,7 @@ class MapImageWidget extends StatelessWidget {
         Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
-            boxShadow: [
+            boxShadow: const [
               BoxShadow(
                 color: Colors.black26,
                 blurRadius: 10.0,

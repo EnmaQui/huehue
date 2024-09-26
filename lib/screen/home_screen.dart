@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
-import '../widgets/title_widget.dart';
+
 import '../widgets/map_image_widget.dart';
 import '../widgets/random_phrase_widget.dart';
+import '../widgets/title_widget.dart';
 
 class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Inicio',
           style: TextStyle(
             color: Colors.white, // Color del texto
@@ -27,9 +30,9 @@ class HomeScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             TitleWidget(),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             MapImageWidget(),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             RandomPhraseWidget(),
           ],
         ),
