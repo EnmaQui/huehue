@@ -5,10 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:huehue/app.routes.dart';
+import 'package:huehue/presentation/blocs/place/place_bloc.dart';
 import 'package:huehue/presentation/screen/shell/shell_screen.dart';
 import 'package:huehue/utils/service.locator.utils.dart';
-
-
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,6 +25,7 @@ void main() async {
 
   runApp(const MyApp());
 }
+
 void setSystemChrome() {
   if (Platform.isAndroid) {
     SystemChrome.setSystemUIOverlayStyle(
@@ -46,18 +47,23 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Mapa Interactivo de Nicaragua',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => serviceLocator<PlaceBloc>(),
+        ),
+      ],
+      child: MaterialApp(
+        title: 'Mapa Interactivo de Nicaragua',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        routes: appRoutes,
+        initialRoute: ShellScreen.routeName,
       ),
-      routes: appRoutes,
-      initialRoute: ShellScreen.routeName,
     );
   }
 }
-
