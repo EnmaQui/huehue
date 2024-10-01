@@ -30,6 +30,8 @@ class RandomPhraseWidget extends StatelessWidget {
         phrase,
         style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic, color: Colors.teal[600]),
         textAlign: TextAlign.center,
+        softWrap: true, // Ajusta el texto automáticamente al siguiente renglón
+        maxLines: null, // Permite un número ilimitado de líneas
       ),
     );
   }

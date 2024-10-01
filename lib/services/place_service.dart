@@ -37,6 +37,7 @@ class PlacesService {
   static Future<Map<String, dynamic>> fetchPlaceDetails(String placeId, String apiKey) async {
     final String url = 'https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&key=$apiKey&language=es';
 
+
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {

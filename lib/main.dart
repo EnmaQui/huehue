@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'screen/home_screen.dart';
 import 'screen/map_screen.dart';
+import 'screen/explorar_screen.dart';
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -13,8 +14,9 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   int _selectedIndex = 0;
   static final List<Widget> _widgetOptions = <Widget>[
-    HomeScreen(),
-    MapScreen(),
+    const HomeScreen(),
+    const MapScreen(),
+    const ExplorarScreen(),
   ];
 
   void _onItemTapped(int index) {
@@ -42,6 +44,10 @@ class _MyAppState extends State<MyApp> {
               icon: Icon(Icons.map),
               label: 'Mapa',
             ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.map),
+              label: 'Explorar',
+            ),
           ],
           currentIndex: _selectedIndex,
           onTap: _onItemTapped,
@@ -52,5 +58,5 @@ class _MyAppState extends State<MyApp> {
 }
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }

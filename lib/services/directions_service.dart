@@ -3,9 +3,9 @@ import 'package:http/http.dart' as http;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class DirectionsService {
-  static const String _apiKey = 'YOUR_API_KEY'; // Asegúrate de reemplazar con tu clave de API
+  static const String _apiKey = 'AIzaSyCNNLly_rF6NkMMgoFAl5dv8lfCmu00mnY'; // Reemplazar con tu API Key
 
-  // Método para obtener direcciones entre dos ubicaciones
+  // Obtener direcciones entre dos ubicaciones
   static Future<List<LatLng>> getDirections(LatLng origin, LatLng destination) async {
     final String url =
         'https://maps.googleapis.com/maps/api/directions/json?origin=${origin.latitude},${origin.longitude}&destination=${destination.latitude},${destination.longitude}&mode=driving&key=$_apiKey';
@@ -22,7 +22,7 @@ class DirectionsService {
       final route = data['routes'][0];
       final List<dynamic> steps = route['legs'][0]['steps'];
 
-      // Convertimos cada paso en coordenadas de LatLng
+      // Convertir pasos en coordenadas LatLng
       List<LatLng> polylinePoints = [];
       for (var step in steps) {
         polylinePoints.add(LatLng(

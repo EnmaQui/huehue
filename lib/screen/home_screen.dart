@@ -14,30 +14,30 @@ class HomeScreen extends StatelessWidget {
         title: const Text(
           'Inicio',
           style: TextStyle(
-            color: Colors.white, // Color del texto
-            fontWeight: FontWeight.bold, // Hacer el texto más grueso
-            fontSize: 20, // Tamaño de la fuente (ajusta según lo que necesites)
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
           ),
         ),
         centerTitle: true,
-        backgroundColor: Colors.teal, // Color de fondo del AppBar
+        backgroundColor: Colors.teal,
       ),
-
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            TitleWidget(),
-            const SizedBox(height: 20),
-            MapImageWidget(),
-            const SizedBox(height: 20),
-            RandomPhraseWidget(),
-          ],
+        child: SingleChildScrollView( // Permite el desplazamiento si es necesario
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: const [
+              TitleWidget(), // Añadir const aquí si TitleWidget es inmutable
+              SizedBox(height: 20),
+              MapImageWidget(), // Añadir const si es posible
+              SizedBox(height: 20),
+              RandomPhraseWidget(), // const ya presente
+            ],
+          ),
         ),
       ),
-      // Estilo del fondo
       backgroundColor: Colors.lightGreen[50],
     );
   }
