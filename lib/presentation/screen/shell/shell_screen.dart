@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:huehue/presentation/screen/explorar_screen.dart';
-import 'package:huehue/presentation/screen/home_screen.dart';
-import 'package:huehue/presentation/screen/map_screen.dart';
+import 'package:huehue/presentation/screen/explorer/explorar_screen.dart';
+import 'package:huehue/presentation/screen/home/home_screen.dart';
+import 'package:huehue/presentation/screen/map/map_screen.dart';
 
 class ShellScreen extends StatefulWidget {
   static const String routeName = '/shell';

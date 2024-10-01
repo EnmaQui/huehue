@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../widgets/map_widget.dart'; // Ajusta el path según la estructura de tu proyecto
+import '../../../widgets/map_widget.dart'; // Ajusta el path según la estructura de tu proyecto
 
 class ExplorarScreen extends StatefulWidget {
   const ExplorarScreen({super.key});

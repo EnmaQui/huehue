@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../widgets/map_image_widget.dart';
-import '../../widgets/random_phrase_widget.dart';
-import '../../widgets/title_widget.dart';
+import '../../../widgets/map_image_widget.dart';
+import '../../../widgets/random_phrase_widget.dart';
+import '../../../widgets/title_widget.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});

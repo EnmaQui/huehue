@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:url_launcher/url_launcher.dart'; // Asegúrate de importar el paquete
-import '../../services/place_service.dart'; // Asegúrate de que la ruta sea correcta
-import '../../widgets/photo_gallery.dart'; // Importa el nuevo widget de galería de fotos
-import '../../widgets/review_widget.dart'; // Asegúrate de importar tu widget de reseñas
+import '../../../services/place_service.dart'; // Asegúrate de que la ruta sea correcta
+import '../../../widgets/photo_gallery.dart'; // Importa el nuevo widget de galería de fotos
+import '../../../widgets/review_widget.dart'; // Asegúrate de importar tu widget de reseñas
 
 class PlaceDetailScreen extends StatefulWidget {
   final LatLng coordinates;
