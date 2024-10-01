@@ -2,20 +2,20 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import '../services/location_service.dart';
-import '../services/directions_service.dart';
-import '../services/place_service.dart';
-import '../widgets/drawer.dart';
+import '../../services/location_service.dart';
+import '../../services/directions_service.dart';
+import '../../services/place_service.dart';
+import '../../widgets/drawer.dart';
 import 'place_detail_screen.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
 
   @override
-  _MapScreenState createState() => _MapScreenState();
+  State<MapScreen> createState() => _MapScreenState();
 }
 
-class _MapScreenState extends State<MapScreen> {
+class _MapScreenState extends State<MapScreen> with AutomaticKeepAliveClientMixin {
   late GoogleMapController mapController;
   final Set<Marker> markers = {};
   LatLng? userLocation;
@@ -141,7 +141,9 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   @override
+
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       appBar: AppBar(title: const Text('Mapa de Nicaragua')),
       drawer: _buildDrawer(),
@@ -198,4 +200,7 @@ class _MapScreenState extends State<MapScreen> {
       );
     }
   }
+  
+  @override
+  bool get wantKeepAlive => true;
 }
