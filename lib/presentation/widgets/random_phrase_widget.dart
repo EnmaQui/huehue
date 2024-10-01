@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-import '../data/phrases.dart';
+import '../../data/phrases.dart';
 
 class RandomPhraseWidget extends StatelessWidget {
   const RandomPhraseWidget({super.key});

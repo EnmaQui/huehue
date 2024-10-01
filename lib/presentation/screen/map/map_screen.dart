@@ -5,7 +5,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../../services/location_service.dart';
 import '../../../services/directions_service.dart';
 import '../../../services/place_service.dart';
-import '../../../widgets/drawer.dart';
+import '../../widgets/drawer.dart';
 import '../place/place_detail_screen.dart';
 
 class MapScreen extends StatefulWidget {

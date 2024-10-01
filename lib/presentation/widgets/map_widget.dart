@@ -4,7 +4,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 import 'package:huehue/const/data.const.dart';
 import 'dart:convert'; // Para el manejo de JSON
-import '../controladores/map_controller.dart';
+import '../../controladores/map_controller.dart';
 
 class MapWidget extends StatefulWidget {
   const MapWidget({super.key});
