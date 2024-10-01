@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:huehue/app.routes.dart';
 import 'package:huehue/presentation/screen/shell/shell_screen.dart';
+import 'package:huehue/utils/service.locator.utils.dart';
 
 
 
@@ -19,6 +20,8 @@ void main() async {
   }
 
   setSystemChrome();
+
+  setUpServiceLocator();
 
   runApp(const MyApp());
 }
