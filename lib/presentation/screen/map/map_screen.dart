@@ -30,7 +30,7 @@ class _MapScreenState extends State<MapScreen>
   void initState() {
     super.initState();
     context.read<PlaceBloc>().add(const InitPlaceEvent());
-    _getUserLocation(); // Obtener la ubicación inicial
+    // _getUserLocation(); // Obtener la ubicación inicial
   }
 
   // Obtener la ubicación actual del usuario
@@ -185,8 +185,8 @@ class _MapScreenState extends State<MapScreen>
                               snippet: place.types.join(', '),
                             ),
                             icon: _getMarkerIcon(place.types.first),
-                            // onTap: () =>
-                            //     _navigateToPlaceDetail(place['place_id'], place['coordinates']),
+                            onTap: () =>
+                                _navigateToPlaceDetail(place.placeId, place.coordinates),
                           );
                         }).toSet()
                       : {},
@@ -197,14 +197,28 @@ class _MapScreenState extends State<MapScreen>
                   // polylines: routePolyline != null ? {routePolyline!} : {},
                 ),
               ),
+              if (state.statusRequestPlace == StatusRequestEnum.pending)
+                Positioned.fill(
+                  child: Container(
+                    color: Colors.white.withOpacity(.5),
+                    child: const Center(
+                      child: CircularProgressIndicator.adaptive(),
+                    ),
+                  ),
+                ),
               Positioned(
                 bottom: 20,
                 left: 20,
                 child: FloatingActionButton(
                   onPressed: () {
-                    if (userLocation != null) {
+                    final locations = state.userLocation;
+                    if (locations != null) {
                       mapController.animateCamera(
-                          CameraUpdate.newLatLngZoom(userLocation!, 14));
+                        CameraUpdate.newLatLngZoom(
+                          LatLng(locations.latitude, locations.longitude),
+                          14,
+                        ),
+                      );
                     }
                   },
                   tooltip: 'Centrar en mi ubicación',
@@ -222,23 +236,9 @@ class _MapScreenState extends State<MapScreen>
   Widget _buildDrawer() {
     return CustomDrawer(
       onFilterSelected: (type) {
-        _filterPlaces(type);
+        context.read<PlaceBloc>().add(FilterPlaceByTypeEvent(type: type));
       },
     );
-  }
-
-  // Filtrar lugares cercanos según el tipo
-  Future<void> _filterPlaces(String type) async {
-    if (userLocation != null) {
-      final nearbyPlaces = await PlacesService.fetchNearbyPlaces(userLocation!);
-      final filteredPlaces =
-          nearbyPlaces.where((place) => place['types'].contains(type)).toList();
-      _createMarkers(filteredPlaces);
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Ubicación no disponible')),
-      );
-    }
   }
 
   @override

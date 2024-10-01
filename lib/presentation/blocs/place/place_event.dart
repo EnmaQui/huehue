@@ -7,3 +7,10 @@ abstract class PlaceEvent {
 class InitPlaceEvent extends PlaceEvent {
   const InitPlaceEvent();
 }
+
+class FilterPlaceByTypeEvent extends PlaceEvent {
+  final String type;
+  const FilterPlaceByTypeEvent({
+    required this.type,
+  });
+}

@@ -36,7 +36,7 @@ class GoogleMapDataSourceImpl extends GoogleMapDataSource {
   @override
   Future<List<PlaceModel>> getNearbyPlaces(LatLng userLocation) async {
     final response = await _dio.get(
-      'place/nearbysearch/json?location=${userLocation.latitude},${userLocation.longitude}&radius=5000&type=tourist_attraction|church|museum|park&key=${DataConst.googleApiKey}&language=es'
+      '/place/nearbysearch/json?location=${userLocation.latitude},${userLocation.longitude}&radius=5000&type=tourist_attraction|church|museum|park&key=${DataConst.googleApiKey}&language=es'
     );
 
     if(response.statusCode == 200 || response.statusCode == 201) {
@@ -51,7 +51,7 @@ class GoogleMapDataSourceImpl extends GoogleMapDataSource {
   @override
   Future<PlaceDetailModel?> getPlaceDetails(String placeId) async {
     final response = await _dio.get(
-      'place/details/json?place_id=$placeId&key=${DataConst.googleApiKey}&language=es'
+      '/place/details/json?place_id=$placeId&key=${DataConst.googleApiKey}&language=es'
     );
 
     if(response.statusCode == 200 || response.statusCode == 201) {

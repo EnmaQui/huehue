@@ -17,13 +17,35 @@ class PlaceBloc extends Bloc<PlaceEvent, PlaceState> {
     required this.googleMapRepository,
   }) : super(const PlaceState()) {
     on<InitPlaceEvent>(_initPlace);
+    on<FilterPlaceByTypeEvent>(_filterPlaceByType);
+  }
+
+  Future<void> _filterPlaceByType(
+    FilterPlaceByTypeEvent event,
+    Emitter<PlaceState> emit,
+  ) async {
+    if(state.userLocation == null) return;
+
+    emit(state.copyWith(statusRequestPlace: StatusRequestEnum.pending));
+    final response = await googleMapRepository.getNearbyPlaces(LatLng(
+      state.userLocation!.latitude,
+      state.userLocation!.longitude,
+    ));
+
+     final filteredPlaces =
+          response.where((place) => place.types.contains(event.type)).toList();
+    
+    emit(state.copyWith(
+      statusRequestPlace: StatusRequestEnum.success,
+      nearbyPlaces: filteredPlaces,
+    ));
   }
 
   Future<void> _initPlace(
       InitPlaceEvent event, Emitter<PlaceState> emit) async {
     try {
       emit(state.copyWith(
-        statusRequestPlace: StatusRequestEnum.pending,
+        statusRequestLocation: StatusRequestEnum.pending,
       ));
       var granted = await LocationUtils.geolocationIsAvailable();
       if (!granted) {
@@ -31,7 +53,7 @@ class PlaceBloc extends Bloc<PlaceEvent, PlaceState> {
       }
 
       emit(state.copyWith(
-        statusRequestPlace: StatusRequestEnum.success,
+        statusRequestLocation: StatusRequestEnum.success,
         isPermissionLocationGranted: granted,
       ));
 
