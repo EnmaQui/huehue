@@ -9,10 +9,10 @@ final serviceLocator = GetIt.instance;
 
 void setUpServiceLocator() {
   serviceLocator
+  ..registerSingleton<Dio>(DioMapConfig.dio)
   ..registerSingleton<PlaceBloc>(PlaceBloc(
     googleMapRepository: GoogleMapRepositoryImpl(
       googleMapDataSource: GoogleMapDataSourceImpl()
     )
-  ))
-  ..registerSingleton<Dio>(DioMapConfig.dio);
+  ));
 }

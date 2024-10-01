@@ -1,7 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:huehue/enum/StatusRequestEnum.dart';
+import 'package:huehue/presentation/blocs/place/place_bloc.dart';
+import 'package:huehue/presentation/screen/no_permissions/LocationDeniedPermission.dart';
 import '../../../services/location_service.dart';
 import '../../../services/directions_service.dart';
 import '../../../services/place_service.dart';
@@ -15,23 +19,18 @@ class MapScreen extends StatefulWidget {
   State<MapScreen> createState() => _MapScreenState();
 }
 
-class _MapScreenState extends State<MapScreen> with AutomaticKeepAliveClientMixin {
+class _MapScreenState extends State<MapScreen>
+    with AutomaticKeepAliveClientMixin {
   late GoogleMapController mapController;
   final Set<Marker> markers = {};
   LatLng? userLocation;
   Polyline? routePolyline;
-  StreamSubscription<LatLng>? locationSubscription;
 
   @override
   void initState() {
     super.initState();
+    context.read<PlaceBloc>().add(const InitPlaceEvent());
     _getUserLocation(); // Obtener la ubicación inicial
-  }
-
-  @override
-  void dispose() {
-    locationSubscription?.cancel();
-    super.dispose();
   }
 
   // Obtener la ubicación actual del usuario
@@ -68,7 +67,8 @@ class _MapScreenState extends State<MapScreen> with AutomaticKeepAliveClientMixi
     if (userLocation == null) return;
 
     try {
-      final directions = await DirectionsService.getDirections(userLocation!, destination);
+      final directions =
+          await DirectionsService.getDirections(userLocation!, destination);
       setState(() {
         routePolyline = Polyline(
           polylineId: const PolylineId('route'),
@@ -99,11 +99,14 @@ class _MapScreenState extends State<MapScreen> with AutomaticKeepAliveClientMixi
       case 'park':
         return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed);
       case 'beach':
-        return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueYellow);
+        return BitmapDescriptor.defaultMarkerWithHue(
+            BitmapDescriptor.hueYellow);
       case 'art_gallery':
-        return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueViolet);
+        return BitmapDescriptor.defaultMarkerWithHue(
+            BitmapDescriptor.hueViolet);
       case 'stadium':
-        return BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange);
+        return BitmapDescriptor.defaultMarkerWithHue(
+            BitmapDescriptor.hueOrange);
       default:
         return BitmapDescriptor.defaultMarker;
     }
@@ -122,7 +125,8 @@ class _MapScreenState extends State<MapScreen> with AutomaticKeepAliveClientMixi
             snippet: place['types'].join(', '),
           ),
           icon: _getMarkerIcon(place['types'].first),
-          onTap: () => _navigateToPlaceDetail(place['place_id'], place['coordinates']),
+          onTap: () =>
+              _navigateToPlaceDetail(place['place_id'], place['coordinates']),
         );
       }).toList());
     });
@@ -141,40 +145,75 @@ class _MapScreenState extends State<MapScreen> with AutomaticKeepAliveClientMixi
   }
 
   @override
-
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
       appBar: AppBar(title: const Text('Mapa de Nicaragua')),
       drawer: _buildDrawer(),
-      body: Stack(
-        children: [
-          GoogleMap(
-            initialCameraPosition: const CameraPosition(
-              target: LatLng(12.1364, -86.2514),
-              zoom: 6,
-            ),
-            markers: markers,
-            onMapCreated: (controller) {
-              mapController = controller;
-              if (userLocation != null) _updateUserLocationMarker();
-            },
-            polylines: routePolyline != null ? {routePolyline!} : {},
-          ),
-          Positioned(
-            bottom: 20,
-            left: 20,
-            child: FloatingActionButton(
-              onPressed: () {
-                if (userLocation != null) {
-                  mapController.animateCamera(CameraUpdate.newLatLngZoom(userLocation!, 14));
-                }
-              },
-              tooltip: 'Centrar en mi ubicación',
-              child: const Icon(Icons.my_location),
-            ),
-          ),
-        ],
+      body: BlocConsumer<PlaceBloc, PlaceState>(
+        listener: (context, state) {
+          if (!state.isPermissionLocationGranted &&
+              state.statusRequestLocation == StatusRequestEnum.success) {
+            Navigator.pushReplacementNamed(
+              context,
+              LocationDeniedPermission.routeName,
+            );
+          }
+        },
+        builder: (context, state) {
+          if (state.statusRequestLocation == StatusRequestEnum.pending) {
+            return const Center(
+              child: CircularProgressIndicator.adaptive(),
+            );
+          }
+
+          return Stack(
+            children: [
+              Positioned.fill(
+                child: GoogleMap(
+                  initialCameraPosition: const CameraPosition(
+                    target: LatLng(12.1364, -86.2514),
+                    zoom: 6,
+                  ),
+                  markers: state.statusRequestPlace == StatusRequestEnum.success
+                      ? state.nearbyPlaces.map<Marker>((place) {
+                          return Marker(
+                            markerId: MarkerId(place.placeId),
+                            position: place.coordinates,
+                            infoWindow: InfoWindow(
+                              title: place.name,
+                              snippet: place.types.join(', '),
+                            ),
+                            icon: _getMarkerIcon(place.types.first),
+                            // onTap: () =>
+                            //     _navigateToPlaceDetail(place['place_id'], place['coordinates']),
+                          );
+                        }).toSet()
+                      : {},
+                  onMapCreated: (controller) {
+                    mapController = controller;
+                    // if (userLocation != null) _updateUserLocationMarker();
+                  },
+                  // polylines: routePolyline != null ? {routePolyline!} : {},
+                ),
+              ),
+              Positioned(
+                bottom: 20,
+                left: 20,
+                child: FloatingActionButton(
+                  onPressed: () {
+                    if (userLocation != null) {
+                      mapController.animateCamera(
+                          CameraUpdate.newLatLngZoom(userLocation!, 14));
+                    }
+                  },
+                  tooltip: 'Centrar en mi ubicación',
+                  child: const Icon(Icons.my_location),
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
@@ -192,7 +231,8 @@ class _MapScreenState extends State<MapScreen> with AutomaticKeepAliveClientMixi
   Future<void> _filterPlaces(String type) async {
     if (userLocation != null) {
       final nearbyPlaces = await PlacesService.fetchNearbyPlaces(userLocation!);
-      final filteredPlaces = nearbyPlaces.where((place) => place['types'].contains(type)).toList();
+      final filteredPlaces =
+          nearbyPlaces.where((place) => place['types'].contains(type)).toList();
       _createMarkers(filteredPlaces);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -200,7 +240,7 @@ class _MapScreenState extends State<MapScreen> with AutomaticKeepAliveClientMixi
       );
     }
   }
-  
+
   @override
   bool get wantKeepAlive => true;
 }
