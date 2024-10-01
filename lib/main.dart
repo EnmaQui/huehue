@@ -1,14 +1,22 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:huehue/app.routes.dart';
 import 'package:huehue/presentation/screen/shell/shell_screen.dart';
 
 
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Load the .env file dependeing on the envoirenment
+  // The .env.dev file is only used for development
+  if (!kReleaseMode) {
+    await dotenv.load(fileName: ".env.dev");
+  }
 
   setSystemChrome();
 

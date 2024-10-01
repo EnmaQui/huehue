@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
+import 'package:huehue/const/data.const.dart';
 import 'dart:convert'; // Para el manejo de JSON
 import '../controladores/map_controller.dart';
 
@@ -62,9 +63,9 @@ class MapWidgetState extends State<MapWidget> {
   }
 
   Future<void> _getDirections(LatLng destination) async {
-    final String googleApiKey = 'AIzaSyCNNLly_rF6NkMMgoFAl5dv8lfCmu00mnY'; // Reemplaza con tu API Key
+    final String googleApiKey = DataConst.googleApiKey; // Reemplaza con tu API Key
     final String url =
-        'https://maps.googleapis.com/maps/api/directions/json?origin=${_currentPosition.latitude},${_currentPosition.longitude}&destination=${destination.latitude},${destination.longitude}&key=$googleApiKey';
+        '${DataConst.googleMapApi}/directions/json?origin=${_currentPosition.latitude},${_currentPosition.longitude}&destination=${destination.latitude},${destination.longitude}&key=$googleApiKey';
 
     final response = await http.get(Uri.parse(url));
 
