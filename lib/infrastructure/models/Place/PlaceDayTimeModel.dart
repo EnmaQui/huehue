@@ -1,7 +1,7 @@
 // ignore: file_names
 class PlaceDayTimeModel {
   int day;
-  int time;
+  String time;
 
   PlaceDayTimeModel({required this.day, required this.time});
 

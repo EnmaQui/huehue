@@ -1,9 +1,11 @@
-import 'package:google_maps_flutter_platform_interface/src/types/location.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:huehue/domain/datasource/google/google.map.datasource.dart';
 import 'package:huehue/domain/entity/place/PlaceDetailEntity.dart';
 import 'package:huehue/domain/entity/place/PlaceEntity.dart';
 import 'package:huehue/domain/repository/google/google.map.repository.dart';
 import 'package:huehue/infrastructure/mappers/google/google.mapper.dart';
+import 'package:huehue/infrastructure/models/Place/PlaceDetailModel.dart';
+import 'package:huehue/infrastructure/models/Place/PlaceReviewerModel.dart';
 
 class GoogleMapRepositoryImpl extends GoogleMapRepository {
   final GoogleMapDataSource googleMapDataSource;
@@ -30,24 +32,26 @@ class GoogleMapRepositoryImpl extends GoogleMapRepository {
   
   @override
   Future<PlaceDetailEntity?> getPlaceDetails(String placeId) async {
-    final reponse = await googleMapDataSource.getPlaceDetails(placeId);
+    final results = await Future.wait([
+      googleMapDataSource.getPlaceDetails(placeId),
+      googleMapDataSource.getPlacePhotos(placeId),
+      googleMapDataSource.gethPlaceReviews(placeId),
+    ]);
 
-    if(reponse != null) {
-      return GoogleMapper.placeDetailModeltoEntity(reponse);
+    final reponse = results[0] as PlaceDetailModel?;
+    final placePhotos = results[1] as List<String>;
+    final placeReview = results[2] as List<PlaceReviewModel>;
+
+    if(reponse != null) { 
+      var convert =  GoogleMapper.placeDetailModeltoEntity(reponse);
+      convert.photos = placePhotos;
+      convert.reviews = (placeReview).map((elment) => GoogleMapper.placeReviewModelToEntity(
+        elment
+      )).toList();
+
+      return convert;
     }
 
     return null;
-  }
-  
-  @override
-  Future getPlacePhotos(String placeId) {
-    // TODO: implement getPlacePhotos
-    throw UnimplementedError();
-  }
-  
-  @override
-  Future gethPlaceReviews(String placeId) {
-    // TODO: implement gethPlaceReviews
-    throw UnimplementedError();
   }
 }

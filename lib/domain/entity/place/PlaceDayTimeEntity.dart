@@ -1,6 +1,6 @@
 class PlaceDayTimeEntity {
   int day;
-  int time;
+  String time;
 
   PlaceDayTimeEntity({required this.day, required this.time});
 }

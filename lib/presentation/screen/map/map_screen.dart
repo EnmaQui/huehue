@@ -3,12 +3,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:huehue/domain/entity/place/PlaceEntity.dart';
 import 'package:huehue/enum/StatusRequestEnum.dart';
 import 'package:huehue/presentation/blocs/place/place_bloc.dart';
 import 'package:huehue/presentation/screen/no_permissions/LocationDeniedPermission.dart';
 import '../../../services/location_service.dart';
 import '../../../services/directions_service.dart';
-import '../../../services/place_service.dart';
 import '../../widgets/drawer.dart';
 import '../place/place_detail_screen.dart';
 
@@ -125,23 +125,19 @@ class _MapScreenState extends State<MapScreen>
             snippet: place['types'].join(', '),
           ),
           icon: _getMarkerIcon(place['types'].first),
-          onTap: () =>
-              _navigateToPlaceDetail(place['place_id'], place['coordinates']),
+          // onTap: () =>
+          //     _navigateToPlaceDetail(place),
         );
       }).toList());
     });
   }
 
   // Navegar a la pantalla de detalles del lugar
-  void _navigateToPlaceDetail(String placeId, LatLng coordinates) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => PlaceDetailScreen(
-          placeId: placeId,
-          coordinates: coordinates,
-        ),
-      ),
-    );
+  void _navigateToPlaceDetail(PlaceEntity place) {
+    context.read<PlaceBloc>().add(GetPlaceDetailEvent(
+      place: place,
+    ));
+    Navigator.of(context).pushNamed(PlaceDetailScreen.routeName);
   }
 
   @override
@@ -156,7 +152,7 @@ class _MapScreenState extends State<MapScreen>
               state.statusRequestLocation == StatusRequestEnum.success) {
             Navigator.pushReplacementNamed(
               context,
-              LocationDeniedPermission.routeName,
+              LocationDeniedPermission.routeName
             );
           }
         },
@@ -186,7 +182,7 @@ class _MapScreenState extends State<MapScreen>
                             ),
                             icon: _getMarkerIcon(place.types.first),
                             onTap: () =>
-                                _navigateToPlaceDetail(place.placeId, place.coordinates),
+                                _navigateToPlaceDetail(place),
                           );
                         }).toSet()
                       : {},

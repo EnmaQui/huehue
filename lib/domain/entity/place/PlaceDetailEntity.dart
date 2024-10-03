@@ -1,4 +1,5 @@
 import 'package:huehue/domain/entity/place/PlaceOpeningEntity.dart';
+import 'package:huehue/domain/entity/place/PlaceReviewEntity.dart';
 
 class PlaceDetailEntity {
   String name;
@@ -6,9 +7,11 @@ class PlaceDetailEntity {
   String phone;
   String description;
   String website;
-  PlaceOpeningEntity openingHours;
-  String rating;
+  PlaceOpeningEntity? openingHours;
+  double rating;
   int reviewsCount;
+  List<String> photos;
+  List<PlaceReviewEntity> reviews;
 
   PlaceDetailEntity({
     required this.name,
@@ -19,5 +22,7 @@ class PlaceDetailEntity {
     required this.openingHours,
     required this.rating,
     required this.reviewsCount,
+    required this.photos,
+    required this.reviews,
   });
 }

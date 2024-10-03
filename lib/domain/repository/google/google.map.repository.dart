@@ -6,7 +6,4 @@ abstract class GoogleMapRepository {
   Future<List<LatLng>> getRoutes(LatLng origin, LatLng destination);
   Future<List<PlaceEntity>> getNearbyPlaces(LatLng userLocation);
   Future<PlaceDetailEntity?> getPlaceDetails(String placeId);
-  Future<dynamic> getPlacePhotos(String placeId);
-  Future<dynamic> gethPlaceReviews(String placeId);
-
 }

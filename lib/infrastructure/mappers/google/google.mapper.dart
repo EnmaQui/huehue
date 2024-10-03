@@ -3,10 +3,21 @@ import 'package:huehue/domain/entity/place/PlaceDetailEntity.dart';
 import 'package:huehue/domain/entity/place/PlaceEntity.dart';
 import 'package:huehue/domain/entity/place/PlaceOpenCloseEntity.dart';
 import 'package:huehue/domain/entity/place/PlaceOpeningEntity.dart';
+import 'package:huehue/domain/entity/place/PlaceReviewEntity.dart';
 import 'package:huehue/infrastructure/models/Place/PlaceDetailModel.dart';
 import 'package:huehue/infrastructure/models/Place/PlaceModel.dart';
+import 'package:huehue/infrastructure/models/Place/PlaceReviewerModel.dart';
 
 class GoogleMapper {
+
+  static PlaceReviewEntity placeReviewModelToEntity(PlaceReviewModel placeReviewerModel) {
+    return PlaceReviewEntity(
+      reviewerName: placeReviewerModel.reviewerName,
+      reviewText: placeReviewerModel.reviewText,
+      rating: placeReviewerModel.rating,
+      photos: placeReviewerModel.photos
+    );
+  }
   
   static PlaceEntity placeModeltoEntity(PlaceModel placeModel) {
     return PlaceEntity(
@@ -20,14 +31,16 @@ class GoogleMapper {
   static PlaceDetailEntity placeDetailModeltoEntity(PlaceDetailModel placeDetailModel) {
     return PlaceDetailEntity(
       name: placeDetailModel.name,
-      address: placeDetailModel.address,
-      phone: placeDetailModel.phone,
-      description: placeDetailModel.description,
-      website: placeDetailModel.website,
-      rating: placeDetailModel.rating,
-      openingHours: PlaceOpeningEntity(
-        openNow: placeDetailModel.openingHours.openNow,
-        periods: placeDetailModel.openingHours.periods.map((e) => PlaceOpenCloseEntity(
+      address: placeDetailModel.address ?? '',
+      phone: placeDetailModel.phone ?? '',
+      description: placeDetailModel.description ?? '',
+      website: placeDetailModel.website ?? '',
+      rating: placeDetailModel.rating ?? 0.0,
+      photos: [],
+      reviews: [],
+      openingHours: placeDetailModel.openingHours == null ? null : PlaceOpeningEntity(
+        openNow: placeDetailModel.openingHours?.openNow ?? false,
+        periods:( placeDetailModel.openingHours?.periods ?? []).map((e) => PlaceOpenCloseEntity(
           close: PlaceDayTimeEntity(
             day: e.close.day,
             time: e.close.time
@@ -38,7 +51,7 @@ class GoogleMapper {
           )
         )).toList()
       ),
-      reviewsCount: placeDetailModel.reviewsCount,
+      reviewsCount: placeDetailModel.reviewsCount ?? 0,
     );
   }
 }

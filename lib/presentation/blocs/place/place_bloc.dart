@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:huehue/domain/entity/place/PlaceDetailEntity.dart';
 import 'package:huehue/domain/entity/place/PlaceEntity.dart';
 import 'package:huehue/domain/repository/google/google.map.repository.dart';
 import 'package:huehue/enum/StatusRequestEnum.dart';
@@ -18,6 +19,30 @@ class PlaceBloc extends Bloc<PlaceEvent, PlaceState> {
   }) : super(const PlaceState()) {
     on<InitPlaceEvent>(_initPlace);
     on<FilterPlaceByTypeEvent>(_filterPlaceByType);
+    on<GetPlaceDetailEvent>(_getPlaceDetail);
+  }
+
+  Future<void> _getPlaceDetail(
+    GetPlaceDetailEvent event,
+    Emitter<PlaceState> emit,
+  ) async {
+   try {
+      emit(state.copyWith(
+      statusRequestPlaceDetail: StatusRequestEnum.pending,
+      placeSelected: event.place,
+    ));
+
+    final place = await googleMapRepository.getPlaceDetails(event.place.placeId);
+    
+    emit(state.copyWith(
+      statusRequestPlaceDetail: StatusRequestEnum.success,
+      placeDetail: place,
+    ));
+   } catch (e) {
+     emit(state.copyWith(
+       statusRequestPlaceDetail: StatusRequestEnum.error
+     ));
+   }
   }
 
   Future<void> _filterPlaceByType(

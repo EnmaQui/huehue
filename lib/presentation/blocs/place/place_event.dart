@@ -14,3 +14,10 @@ class FilterPlaceByTypeEvent extends PlaceEvent {
     required this.type,
   });
 }
+
+class GetPlaceDetailEvent extends PlaceEvent {
+  final PlaceEntity place;
+  const GetPlaceDetailEvent({
+    required this.place,
+  });
+}

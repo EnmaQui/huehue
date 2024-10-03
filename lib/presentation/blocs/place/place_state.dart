@@ -3,6 +3,12 @@ part of 'place_bloc.dart';
 class PlaceState extends Equatable {
   final StatusRequestEnum statusRequestPlace;
   final StatusRequestEnum statusRequestLocation;
+  final StatusRequestEnum statusRequestPlaceDetail;
+
+
+  final PlaceEntity? placeSelected;
+  final PlaceDetailEntity? placeDetail;
+
   final Position? userLocation;
   final bool isPermissionLocationGranted;
   final List<PlaceEntity> nearbyPlaces;
@@ -13,6 +19,9 @@ class PlaceState extends Equatable {
     this.isPermissionLocationGranted = false,
     this.statusRequestLocation = StatusRequestEnum.idle,
     this.nearbyPlaces = const [],
+    this.placeSelected,
+    this.placeDetail,
+    this.statusRequestPlaceDetail = StatusRequestEnum.idle
   });
 
   PlaceState copyWith({
@@ -20,14 +29,20 @@ class PlaceState extends Equatable {
     Position? userLocation,
     bool? isPermissionLocationGranted,
     StatusRequestEnum? statusRequestLocation,
-    List<PlaceEntity>? nearbyPlaces
+    List<PlaceEntity>? nearbyPlaces,
+    PlaceEntity? placeSelected,
+    PlaceDetailEntity? placeDetail,
+    StatusRequestEnum? statusRequestPlaceDetail
   }) {
     return PlaceState(
       statusRequestPlace: statusRequestPlace ?? this.statusRequestPlace,
       userLocation: userLocation ?? this.userLocation,
       isPermissionLocationGranted: isPermissionLocationGranted ?? this.isPermissionLocationGranted,
       statusRequestLocation: statusRequestLocation ?? this.statusRequestLocation,
-      nearbyPlaces: nearbyPlaces ?? this.nearbyPlaces
+      nearbyPlaces: nearbyPlaces ?? this.nearbyPlaces,
+      placeSelected: placeSelected ?? this.placeSelected,
+      placeDetail: placeDetail ?? this.placeDetail,
+      statusRequestPlaceDetail: statusRequestPlaceDetail ?? this.statusRequestPlaceDetail
     );
   }
 
@@ -37,6 +52,7 @@ class PlaceState extends Equatable {
     statusRequestPlace,
     isPermissionLocationGranted,
     statusRequestLocation,
-    nearbyPlaces
+    nearbyPlaces,
+    statusRequestPlaceDetail
   ];
 }
