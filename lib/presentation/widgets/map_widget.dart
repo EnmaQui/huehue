@@ -1,9 +1,11 @@
+import 'dart:convert'; // Para el manejo de JSON
+
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:huehue/const/data.const.dart';
-import 'dart:convert'; // Para el manejo de JSON
+
 import '../../controladores/map_controller.dart';
 
 class MapWidget extends StatefulWidget {
@@ -16,7 +18,7 @@ class MapWidget extends StatefulWidget {
 class MapWidgetState extends State<MapWidget> {
   late GoogleMapController mapController;
   LatLng _currentPosition = const LatLng(12.115, -86.236); // Posición inicial por defecto
-  Set<Polyline> _polylines = {}; // Para almacenar las polilíneas de la ruta
+  final Set<Polyline> _polylines = {}; // Para almacenar las polilíneas de la ruta
 
   @override
   void initState() {
@@ -51,12 +53,10 @@ class MapWidgetState extends State<MapWidget> {
     });
 
     // Mueve la cámara a la ubicación actual
-    if (mapController != null) {
-      mapController.animateCamera(
-        CameraUpdate.newLatLng(_currentPosition),
-      );
+    mapController.animateCamera(
+      CameraUpdate.newLatLng(_currentPosition),
+    );
     }
-  }
 
   void _initializeRoute(LatLng destination) {
     _getDirections(destination); // Obtener dirección al inicializar la ruta
@@ -104,24 +104,22 @@ class MapWidgetState extends State<MapWidget> {
     });
 
     // Mueve la cámara a la ruta
-    if (mapController != null) {
-      mapController.animateCamera(
-        CameraUpdate.newLatLngBounds(
-          LatLngBounds(
-            southwest: LatLng(
-              polylineCoordinates.map((point) => point.latitude).reduce((a, b) => a < b ? a : b),
-              polylineCoordinates.map((point) => point.longitude).reduce((a, b) => a < b ? a : b),
-            ),
-            northeast: LatLng(
-              polylineCoordinates.map((point) => point.latitude).reduce((a, b) => a > b ? a : b),
-              polylineCoordinates.map((point) => point.longitude).reduce((a, b) => a > b ? a : b),
-            ),
+    mapController.animateCamera(
+      CameraUpdate.newLatLngBounds(
+        LatLngBounds(
+          southwest: LatLng(
+            polylineCoordinates.map((point) => point.latitude).reduce((a, b) => a < b ? a : b),
+            polylineCoordinates.map((point) => point.longitude).reduce((a, b) => a < b ? a : b),
           ),
-          100,
+          northeast: LatLng(
+            polylineCoordinates.map((point) => point.latitude).reduce((a, b) => a > b ? a : b),
+            polylineCoordinates.map((point) => point.longitude).reduce((a, b) => a > b ? a : b),
+          ),
         ),
-      );
+        100,
+      ),
+    );
     }
-  }
 
   @override
   Widget build(BuildContext context) {

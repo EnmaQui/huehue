@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:huehue/presentation/screen/explorer/explorar_screen.dart';
 import 'package:huehue/presentation/screen/home/home_screen.dart';
 import 'package:huehue/presentation/screen/map/map_screen.dart';
-
+import 'package:huehue/presentation/screen/pruebas/prueba_screen.dart';
 class ShellScreen extends StatefulWidget {
   static const String routeName = '/shell';
   const ShellScreen({super.key});
@@ -25,26 +25,44 @@ class _ShellScreenState extends State<ShellScreen> {
             HomeScreen(),
             MapScreen(),
             ExplorarScreen(),
+            PruebasScreen(),
           ],
         ),
       ),
-       bottomNavigationBar: BottomNavigationBar(
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Inicio',
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.home,
+              color: Colors.blue, // Cambia el color del ícono a azul
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.map),
-              label: 'Mapa',
+            label: 'Inicio',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.map,
+              color: Colors.blue, // Cambia el color del ícono a azul
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.map),
-              label: 'Explorar',
+            label: 'Mapa',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.explore, // Cambié a un ícono diferente para 'Explorar'
+              color: Colors.blue, // Cambia el color del ícono a azul
             ),
-          ],
-          onTap: (val) => _pageController.jumpToPage(val),
-        ),
+            label: 'Explorar',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.note, // Cambié a un ícono diferente para 'Pruebas'
+              color: Colors.blue, // Cambia el color del ícono a azul
+            ),
+            label: 'Pruebas',
+          ),
+        ],
+        onTap: (val) => _pageController.jumpToPage(val),
+      ),
+
     );
   }
 }
