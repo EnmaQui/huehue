@@ -1,19 +1,27 @@
-// map_screen.dart
-// ignore_for_file: deprecated_member_use
+// ignore_for_file: unused_element, library_private_types_in_public_api
 
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
-import 'package:url_launcher/url_launcher.dart';
+
+import '../pruebas/widgets_maps/categorias_widget.dart';
+import '../pruebas/widgets_maps/detalles_widget.dart';
+import '../pruebas/widgets_maps/lista_lugares.dart';
+import '../pruebas/widgets_maps/map_widget.dart';
 
 class MapScreen extends StatefulWidget {
   final double latitude;
   final double longitude;
   final String placeId;
 
-  const MapScreen({required this.latitude, required this.longitude, required this.placeId, super.key});
+  const MapScreen({
+    super.key,
+    required this.latitude,
+    required this.longitude,
+    required this.placeId,
+  });
 
   @override
   _MapScreenState createState() => _MapScreenState();
@@ -22,23 +30,10 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> {
   late GoogleMapController mapController;
   Set<Marker> markers = {};
-  List<String> categories = [
-    'Iglesias',
-    'Restaurantes',
-    'Monumentos',
-    'Edificios históricos',
-    'Playas',
-    'Reservas Naturales',
-    'Parques',
-    'Tiendas de conveniencia',
-    'Centros comerciales',
-    'Volcanes',
-    'Montañas',
-    'Islas',
-  ];
-  String selectedCategory = 'Iglesias'; // Categoría seleccionada por defecto
-  List<dynamic> places = []; // Lugares a mostrar
+  String selectedCategory = 'Iglesias';
+  List<dynamic> places = [];
   bool isLoadingPlaces = true;
+  dynamic selectedPlace;
 
   @override
   void initState() {
@@ -46,53 +41,131 @@ class _MapScreenState extends State<MapScreen> {
     fetchNearbyPlaces();
   }
 
-  Future<void> fetchNearbyPlaces() async {
-    // Aquí deberías reemplazar el API_KEY con tu clave de API real
-    String apiKey = 'AIzaSyCNNLly_rF6NkMMgoFAl5dv8lfCmu00mnY';
-    final response = await http.get(Uri.parse(
-        'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${widget.latitude},${widget.longitude}&radius=1500&type=${selectedCategory}&key=$apiKey'));
+Future<void> fetchNearbyPlaces() async {
+  const String apiKey = 'AIzaSyCNNLly_rF6NkMMgoFAl5dv8lfCmu00mnY';
+  final String type = _getTypeFromCategory(selectedCategory); // Función para obtener el tipo correcto
+  final double latitude = widget.latitude;
+  final double longitude = widget.longitude;
+
+  final url = Uri.parse(
+    'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=$latitude,$longitude&radius=1500&type=$type&key=$apiKey',
+  );
+
+  try {
+    final response = await http.get(url);
 
     if (response.statusCode == 200) {
-      setState(() {
-        places = json.decode(response.body)['results'];
-        isLoadingPlaces = false;
+      final data = json.decode(response.body);
 
-        // Marcar los lugares en el mapa
-        markers.clear();
-        for (var place in places) {
-          markers.add(Marker(
-            markerId: MarkerId(place['place_id']),
-            position: LatLng(place['geometry']['location']['lat'], place['geometry']['location']['lng']),
-            infoWindow: InfoWindow(title: place['name']),
-          ));
-        }
+      setState(() {
+        places = data['results'];
+        isLoadingPlaces = false;
       });
     } else {
-      setState(() {
-        isLoadingPlaces = false;
-      });
+      throw Exception('Error al obtener lugares cercanos');
+    }
+  } catch (error) {
+    setState(() {
+      isLoadingPlaces = false;
+    });
+    print('Error en fetchNearbyPlaces: $error');
+  }
+}
+
+String _getTypeFromCategory(String category) {
+  switch (category) {
+    case 'Iglesias':
+      return 'church'; // Tipo correspondiente a Iglesias
+    case 'Restaurantes':
+      return 'restaurant'; // Tipo correspondiente a Restaurantes
+    case 'Monumentos':
+      return 'museum'; // Tipo correspondiente a Monumentos (ajusta según tus necesidades)
+    default:
+      return 'establishment'; // Valor por defecto si no coincide con ninguna categoría
+  }
+}
+
+  Future<void> _onPlaceSelected(dynamic place) async {
+    const String apiKey = 'AIzaSyCNNLly_rF6NkMMgoFAl5dv8lfCmu00mnY'; // Asegúrate de usar tu API Key
+    final String placeId = place['place_id'];
+
+    final url = Uri.parse(
+      'https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&key=$apiKey',
+    );
+
+    try {
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+
+        if (data['result'] != null) { // Verificar si se encontraron detalles
+          setState(() {
+            selectedPlace = {
+              'name': data['result']['name'],
+              'rating': data['result']['rating'],
+              'opening_hours': data['result']['opening_hours'],
+              'photos': data['result']['photos']?.map((photo) {
+                return 'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photo['photo_reference']}&key=$apiKey';
+              }).toList() ?? [],
+            };
+
+            // Actualizar los marcadores para mostrar solo el lugar seleccionado
+            markers = {
+              Marker(
+                markerId: MarkerId(placeId),
+                position: LatLng(
+                  place['geometry']['location']['lat'],
+                  place['geometry']['location']['lng'],
+                ),
+                infoWindow: InfoWindow(title: place['name']),
+              ),
+            };
+
+            // Centrar el mapa en el lugar seleccionado
+            mapController.animateCamera(
+              CameraUpdate.newLatLng(
+                LatLng(
+                  place['geometry']['location']['lat'],
+                  place['geometry']['location']['lng'],
+                ),
+              ),
+            );
+
+            // Mostrar los detalles del lugar
+            _showPlaceDetails();
+          });
+        } else {
+          throw Exception('No se encontraron detalles para el lugar seleccionado');
+        }
+      } else {
+        throw Exception('Error al obtener detalles del lugar');
+      }
+    } catch (error) {
+      print('Error en _onPlaceSelected: $error');
+      // Aquí puedes mostrar un mensaje al usuario
     }
   }
 
-  void _onMapCreated(GoogleMapController controller) {
-    mapController = controller;
-  }
-
-  void _onCategoryChanged(String? category) {
-    if (category != null) {
-      setState(() {
-        selectedCategory = category;
-        isLoadingPlaces = true; // Inicia la carga de nuevos lugares
-      });
-      fetchNearbyPlaces();
-    }
-  }
-
-  void _showRoute(double lat, double lng) {
-    // Aquí puedes usar la API de Google Directions para mostrar la ruta
-    String url = 'https://www.google.com/maps/dir/?api=1&destination=$lat,$lng';
-    // Puedes usar un paquete como url_launcher para abrir el navegador
-    launch(url);
+  void _showPlaceDetails() {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return PlaceDetailsWidget(
+          name: selectedPlace['name'],
+          rating: (selectedPlace['rating'] is int)
+              ? (selectedPlace['rating'] as int).toDouble()
+              : selectedPlace['rating'] ?? 0.0,
+          openNow: selectedPlace['opening_hours']?['open_now'] ?? false,
+          photos: (selectedPlace['photos'] != null)
+              ? (selectedPlace['photos'] as List<dynamic>).cast<String>()
+              : <String>[], // Lista vacía si no hay fotos
+          reviews: (selectedPlace['reviews'] != null)
+              ? (selectedPlace['reviews'] as List<dynamic>)
+              : <dynamic>[], // Lista vacía si no hay reseñas
+        );
+      },
+    );
   }
 
   @override
@@ -103,87 +176,43 @@ class _MapScreenState extends State<MapScreen> {
       ),
       body: Column(
         children: [
-          // Mapa ocupa el 40% de la pantalla
-          Container(
+          // Mapa
+          SizedBox(
             height: MediaQuery.of(context).size.height * 0.4,
-            child: GoogleMap(
-              onMapCreated: _onMapCreated,
-              initialCameraPosition: CameraPosition(
-                target: LatLng(widget.latitude, widget.longitude),
-                zoom: 15,
-              ),
+            child: MapWidget(
+              latitude: widget.latitude,
+              longitude: widget.longitude,
               markers: markers,
+              onMapCreated: (controller) {
+                mapController = controller;
+              },
+              onPlaceSelected: (LatLng position) {
+                // Puedes manejar la selección adicional si es necesario
+              },
             ),
           ),
-          // Lista de categorías
-          Expanded(
-            child: Column(
-              children: [
-                // Filtros
-                SizedBox(
-                  height: 50,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: categories.length,
-                    itemBuilder: (context, index) {
-                      return GestureDetector(
-                        onTap: () => _onCategoryChanged(categories[index]),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            color: selectedCategory == categories[index] ? Colors.blue : Colors.grey[300],
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Text(
-                            categories[index],
-                            style: TextStyle(color: selectedCategory == categories[index] ? Colors.white : Colors.black),
-                          ),
-                        ),
-                      );
-                    },
+          // Categorías
+          CategorySelectorWidget(
+            categories: const ['Iglesias', 'Restaurantes', 'Monumentos'],
+            selectedCategory: selectedCategory,
+            onCategoryChanged: (category) {
+              setState(() {
+                selectedCategory = category;
+                isLoadingPlaces = true; // Mostrar el indicador de carga
+              });
+              fetchNearbyPlaces(); // Volver a cargar lugares
+            },
+          ),
+          // Lista de Lugares
+          isLoadingPlaces
+              ? const Center(child: CircularProgressIndicator())
+              : Expanded(
+                  child: PlaceListWidget(
+                    places: places,
+                    onPlaceSelected: _onPlaceSelected,
+                    isLoading: isLoadingPlaces,
                   ),
                 ),
-                // Lista de lugares
-                isLoadingPlaces
-                    ? const Center(child: CircularProgressIndicator())
-                    : Expanded(
-                        child: ListView.builder(
-                          itemCount: places.length,
-                          itemBuilder: (context, index) {
-                            final place = places[index];
-                            return ListTile(
-                              title: Text(place['name']),
-                              subtitle: Text(place['vicinity'] ?? ''),
-                              onTap: () {
-                                // Marcar el lugar en el mapa
-                                final location = place['geometry']['location'];
-                                setState(() {
-                                  markers.add(Marker(
-                                    markerId: MarkerId(place['place_id']),
-                                    position: LatLng(location['lat'], location['lng']),
-                                    infoWindow: InfoWindow(title: place['name']),
-                                  ));
-                                });
-                                mapController.animateCamera(CameraUpdate.newLatLng(LatLng(location['lat'], location['lng'])));
-                              },
-                            );
-                          },
-                        ),
-                      ),
-              ],
-            ),
-          ),
-          // Botón flotante para mostrar ruta
-          FloatingActionButton(
-            onPressed: () {
-              if (places.isNotEmpty) {
-                final location = places[0]['geometry']['location'];
-                _showRoute(location['lat'], location['lng']);
-              }
-            },
-            child: const Icon(Icons.directions),
-          ),
         ],
       ),
     );
