@@ -74,18 +74,34 @@ class PlaceDetailsWidget extends StatelessWidget {
                     scrollDirection: Axis.horizontal,
                     itemCount: photos.length,
                     itemBuilder: (context, index) {
-                      return Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 5),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: Image.network(
-                            photos[index],
-                            height: 100,
-                            width: 150,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return const Icon(Icons.broken_image, size: 100);
-                            },
+                      return GestureDetector(
+                        onTap: () {
+                          // Navegar a la pantalla de imagen completa
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => FullScreenImage(
+                                imageUrl: photos[index],
+                              ),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 5),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: Hero(
+                              tag: photos[index],
+                              child: Image.network(
+                                photos[index],
+                                height: 100,
+                                width: 150,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return const Icon(Icons.broken_image, size: 100);
+                                },
+                              ),
+                            ),
                           ),
                         ),
                       );
@@ -124,6 +140,33 @@ class PlaceDetailsWidget extends StatelessWidget {
                   ),
                 ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class FullScreenImage extends StatelessWidget {
+  final String imageUrl;
+
+  const FullScreenImage({required this.imageUrl, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.white),
+      ),
+      backgroundColor: Colors.black,
+      body: Center(
+        child: Hero(
+          tag: imageUrl, // Usamos Hero para animar la transición de la imagen
+          child: Image.network(
+            imageUrl,
+            fit: BoxFit.contain,
           ),
         ),
       ),

@@ -79,11 +79,30 @@ String _getTypeFromCategory(String category) {
     case 'Restaurantes':
       return 'restaurant'; // Tipo correspondiente a Restaurantes
     case 'Monumentos':
-      return 'museum'; // Tipo correspondiente a Monumentos (ajusta según tus necesidades)
+      return 'museum'; // Tipo correspondiente a Monumentos
+    case 'Edificios históricos':
+      return 'point_of_interest'; // Tipo para Edificios históricos
+    case 'Playas':
+      return 'beach'; // Tipo para Playas
+    case 'Reservas Naturales':
+      return 'natural_feature'; // Tipo para Reservas Naturales
+    case 'Parques':
+      return 'park'; // Tipo para Parques
+    case 'Tiendas de conveniencia':
+      return 'convenience_store'; // Tipo para Tiendas de conveniencia
+    case 'Centros comerciales':
+      return 'shopping_mall'; // Tipo para Centros comerciales
+    case 'Volcanes':
+      return 'geological_feature'; // Tipo para Volcanes
+    case 'Montañas':
+      return 'mountain'; // Tipo para Montañas
+    case 'Islas':
+      return 'island'; // Tipo para Islas
     default:
       return 'establishment'; // Valor por defecto si no coincide con ninguna categoría
   }
 }
+
 
   Future<void> _onPlaceSelected(dynamic place) async {
     const String apiKey = 'AIzaSyCNNLly_rF6NkMMgoFAl5dv8lfCmu00mnY'; // Asegúrate de usar tu API Key
@@ -193,7 +212,20 @@ String _getTypeFromCategory(String category) {
           ),
           // Categorías
           CategorySelectorWidget(
-            categories: const ['Iglesias', 'Restaurantes', 'Monumentos'],
+            categories: const [
+              'Iglesias',
+              'Restaurantes',
+              'Monumentos',
+              'Edificios históricos',
+              'Playas',
+              'Reservas Naturales',
+              'Parques',
+              'Tiendas de conveniencia',
+              'Centros comerciales',
+              'Volcanes',
+              'Montañas',
+              'Islas',
+            ],
             selectedCategory: selectedCategory,
             onCategoryChanged: (category) {
               setState(() {
@@ -203,6 +235,7 @@ String _getTypeFromCategory(String category) {
               fetchNearbyPlaces(); // Volver a cargar lugares
             },
           ),
+
           // Lista de Lugares
           isLoadingPlaces
               ? const Center(child: CircularProgressIndicator())
