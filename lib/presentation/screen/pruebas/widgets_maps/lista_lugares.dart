@@ -1,21 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class PlaceListWidget extends StatelessWidget {
   final List<dynamic> places;
-  final Function(dynamic) onPlaceSelected;
+  final Function(dynamic, LatLng) onPlaceSelected; // Actualiza el tipo de función
   final bool isLoading;
 
   const PlaceListWidget({
     super.key,
     required this.places,
     required this.onPlaceSelected,
-    this.isLoading = false, // Estado para indicar carga
+    this.isLoading = false,
   });
 
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
-      return const Center(child: CircularProgressIndicator()); // Indicador de carga
+      return const Center(child: CircularProgressIndicator());
     }
 
     if (places.isEmpty) {
@@ -26,11 +27,16 @@ class PlaceListWidget extends StatelessWidget {
       itemCount: places.length,
       itemBuilder: (context, index) {
         final place = places[index];
+        final LatLng position = LatLng(
+          place['geometry']['location']['lat'],
+          place['geometry']['location']['lng'],
+        );
+
         return Card(
-          elevation: 4, // Sombra para dar efecto de elevación
+          elevation: 4,
           margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
           child: ListTile(
-            contentPadding: const EdgeInsets.all(10), // Espaciado interno
+            contentPadding: const EdgeInsets.all(10),
             title: Text(
               place['name'] ?? 'Nombre no disponible',
               style: const TextStyle(
@@ -47,11 +53,14 @@ class PlaceListWidget extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       const Icon(Icons.star, color: Colors.amber, size: 20),
-                      Text(place['rating'].toString(), style: const TextStyle(fontSize: 16)),
+                      Text(place['rating'].toString(),
+                          style: const TextStyle(fontSize: 16)),
                     ],
                   )
                 : null,
-            onTap: () => onPlaceSelected(place), // Acción de selección
+            onTap: () {
+              onPlaceSelected(place, position); // Pasa la posición del lugar seleccionado
+            },
             leading: place['photos'] != null && place['photos'].isNotEmpty
                 ? ClipOval(
                     child: Image.network(
@@ -61,7 +70,10 @@ class PlaceListWidget extends StatelessWidget {
                       fit: BoxFit.cover,
                     ),
                   )
-                : const Icon(Icons.location_on, size: 40), // Placeholder si no hay foto
+                : const CircleAvatar(
+                    backgroundColor: Colors.grey,
+                    child: Icon(Icons.place, color: Colors.white),
+                  ),
           ),
         );
       },

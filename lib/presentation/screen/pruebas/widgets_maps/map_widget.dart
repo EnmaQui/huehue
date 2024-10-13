@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 class MapWidget extends StatefulWidget {
   final double latitude;
   final double longitude;
-  final Set<Marker> markers;
+  final Set<Marker> markers; 
   final Function(GoogleMapController) onMapCreated;
   final Function(LatLng) onPlaceSelected;
 
@@ -21,13 +21,24 @@ class MapWidget extends StatefulWidget {
   });
 
   @override
-  // ignore: library_private_types_in_public_api
   _MapWidgetState createState() => _MapWidgetState();
 }
 
 class _MapWidgetState extends State<MapWidget> {
   late GoogleMapController mapController;
-  Set<Polyline> _polylines = {}; // Para dibujar la ruta
+  Set<Polyline> _polylines = {};
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.markers.isNotEmpty) {
+      Marker destinationMarker = widget.markers.first;
+      _getDirections(
+        LatLng(widget.latitude, widget.longitude),
+        destinationMarker.position,
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,25 +48,28 @@ class _MapWidgetState extends State<MapWidget> {
           onMapCreated: (GoogleMapController controller) {
             mapController = controller;
             widget.onMapCreated(controller);
+            // Centrar el mapa en la ubicación inicial
+            mapController.animateCamera(
+              CameraUpdate.newLatLng(LatLng(widget.latitude, widget.longitude)),
+            );
           },
           initialCameraPosition: CameraPosition(
             target: LatLng(widget.latitude, widget.longitude),
             zoom: 15,
           ),
           markers: widget.markers,
-          polylines: _polylines, // Añadir la ruta al mapa
+          polylines: _polylines,
           onTap: (LatLng position) {
-            // Llama a la función onPlaceSelected cuando se toca el mapa
             widget.onPlaceSelected(position);
           },
           myLocationEnabled: true,
+          mapType: MapType.normal,
         ),
         Positioned(
           bottom: 16,
           right: 16,
           child: FloatingActionButton(
             onPressed: () async {
-              // Traza la ruta desde la ubicación actual hasta la primera ubicación en los marcadores
               if (widget.markers.isNotEmpty) {
                 Marker destinationMarker = widget.markers.first;
                 await _getDirections(
@@ -72,58 +86,99 @@ class _MapWidgetState extends State<MapWidget> {
     );
   }
 
-  // Método para solicitar la ruta desde Google Directions API
   Future<void> _getDirections(LatLng origin, LatLng destination) async {
-    const String apiKey = 'AIzaSyCNNLly_rF6NkMMgoFAl5dv8lfCmu00mnY'; // Reemplaza con tu API Key de Google Maps
+    const String apiKey = 'AIzaSyCNNLly_rF6NkMMgoFAl5dv8lfCmu00mnY'; // Reemplaza con tu API Key
     final String url =
-        'https://maps.googleapis.com/maps/api/directions/json?origin=${origin.latitude},${origin.longitude}&destination=${destination.latitude},${destination.longitude}&key=$apiKey';
+        'https://maps.googleapis.com/maps/api/directions/json?origin=${origin.latitude},${origin.longitude}&destination=${destination.latitude},${destination.longitude}&key=$apiKey&alternatives=true&departure_time=now&traffic_model=best_guess';
 
-    final response = await http.get(Uri.parse(url));
+    try {
+      final response = await http.get(Uri.parse(url));
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      final List<dynamic> steps = data['routes'][0]['legs'][0]['steps'];
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final List<dynamic> routes = data['routes'];
 
-      List<LatLng> polylineCoordinates = [];
+        setState(() {
+          _polylines.clear(); 
 
-      for (var step in steps) {
-        polylineCoordinates.add(LatLng(
-          step['start_location']['lat'],
-          step['start_location']['lng'],
-        ));
-        polylineCoordinates.add(LatLng(
-          step['end_location']['lat'],
-          step['end_location']['lng'],
-        ));
+          // Usar la primera ruta como la mejor ruta
+          if (routes.isNotEmpty) {
+            // Mejor ruta (verde)
+            String bestRoutePolyline = routes[0]['overview_polyline']['points'];
+            List<LatLng> bestRouteCoordinates = decodePolyline(bestRoutePolyline);
+            _polylines.add(
+              Polyline(
+                polylineId: PolylineId('best_route'),
+                points: bestRouteCoordinates,
+                color: Colors.green, // Mejor ruta en verde
+                width: 5,
+              ),
+            );
+
+            // Alternativas (gris)
+            for (var i = 1; i < routes.length; i++) {
+              String alternativePolyline = routes[i]['overview_polyline']['points'];
+              List<LatLng> alternativeCoordinates = decodePolyline(alternativePolyline);
+              _polylines.add(
+                Polyline(
+                  polylineId: PolylineId('alternative_route_$i'),
+                  points: alternativeCoordinates,
+                  color: Colors.grey, // Alternativas en gris
+                  width: 3,
+                ),
+              );
+            }
+          }
+        });
+
+        // Centrar el mapa en la mejor ruta
+        if (routes.isNotEmpty) {
+          List<LatLng> firstRouteCoordinates = decodePolyline(routes[0]['overview_polyline']['points']);
+          mapController.animateCamera(
+            CameraUpdate.newLatLngBounds(
+              _boundsFromLatLngList(firstRouteCoordinates),
+              50.0,
+            ),
+          );
+        }
+      } else {
+        print('Error al obtener la dirección: ${response.statusCode}');
       }
-
-      setState(() {
-        // Limpiar las rutas anteriores antes de agregar la nueva
-        _polylines.clear(); 
-
-        _polylines.add(
-          Polyline(
-            polylineId: const PolylineId('route'),
-            points: polylineCoordinates,
-            color: Colors.blue,
-            width: 5,
-          ),
-        );
-      });
-
-      // Centrar el mapa en la ruta
-      mapController.animateCamera(
-        CameraUpdate.newLatLngBounds(
-          _boundsFromLatLngList(polylineCoordinates),
-          50.0, // Espaciado alrededor del límite
-        ),
-      );
-    } else {
-      print('Error al obtener la dirección: ${response.statusCode}');
+    } catch (e) {
+      print('Excepción al obtener direcciones: $e');
     }
   }
 
-  // Crear bounds para centrar el mapa
+  List<LatLng> decodePolyline(String poly) {
+    List<LatLng> polyline = [];
+    int index = 0, len = poly.length;
+    int lat = 0, lng = 0;
+
+    while (index < len) {
+      int b, shift = 0, result = 0;
+      do {
+        b = poly.codeUnitAt(index++) - 63;
+        result |= (b & 0x1f) << shift;
+        shift += 5;
+      } while (b >= 0x20);
+      int dlat = ((result >> 1) ^ -(result & 1));
+      lat += dlat;
+
+      shift = 0;
+      result = 0;
+      do {
+        b = poly.codeUnitAt(index++) - 63;
+        result |= (b & 0x1f) << shift;
+        shift += 5;
+      } while (b >= 0x20);
+      int dlng = ((result >> 1) ^ -(result & 1));
+      lng += dlng;
+
+      polyline.add(LatLng((lat / 1E5), (lng / 1E5)));
+    }
+    return polyline;
+  }
+
   LatLngBounds _boundsFromLatLngList(List<LatLng> list) {
     final southwestLat = list.map((e) => e.latitude).reduce((value, element) => value < element ? value : element);
     final southwestLng = list.map((e) => e.longitude).reduce((value, element) => value < element ? value : element);
@@ -136,4 +191,3 @@ class _MapWidgetState extends State<MapWidget> {
     );
   }
 }
-

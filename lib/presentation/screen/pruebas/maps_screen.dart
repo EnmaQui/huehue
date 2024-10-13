@@ -36,11 +36,12 @@ class _MapScreenState extends State<MapScreen> {
   double? userLatitude; // Para almacenar la latitud del usuario
   double? userLongitude; // Para almacenar la longitud del usuario
 
-  @override
-  void initState() {
-    super.initState();
-    _getUserLocation(); // Obtener la ubicación del usuario
-  }
+@override
+void initState() {
+  super.initState();
+  _getUserLocation(); // Obtener la ubicación del usuario
+  
+}
 
 
   // Método para obtener la ubicación del usuario
@@ -57,6 +58,10 @@ class _MapScreenState extends State<MapScreen> {
     });
     fetchNearbyPlaces(); // Llama a la función para obtener lugares cercanos
   }
+
+
+
+
 
 
 
@@ -124,7 +129,7 @@ String _getTypeFromCategory(String category) {
 }
 
 
-Future<void> _onPlaceSelected(dynamic place) async {
+Future<void> _onPlaceSelected(dynamic place, Object? position) async {
   const String apiKey = 'AIzaSyCNNLly_rF6NkMMgoFAl5dv8lfCmu00mnY'; // Asegúrate de usar tu API Key
   final String placeId = place['place_id'];
 
@@ -140,6 +145,7 @@ Future<void> _onPlaceSelected(dynamic place) async {
 
       if (data['result'] != null) { // Verificar si se encontraron detalles
         setState(() {
+          // Actualizar los detalles del lugar seleccionado
           selectedPlace = {
             'name': data['result']['name'],
             'rating': data['result']['rating'],
@@ -148,10 +154,12 @@ Future<void> _onPlaceSelected(dynamic place) async {
               return 'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photo['photo_reference']}&key=$apiKey';
             }).toList() ?? [],
           };
-          print('Selected Place: $selectedPlace'); // Impresión para depuración
 
-          // Actualizar los marcadores para mostrar solo el lugar seleccionado
-          markers = {
+          // Limpiar los marcadores anteriores
+          markers.clear();
+
+          // Agregar el nuevo marcador
+          markers.add(
             Marker(
               markerId: MarkerId(placeId),
               position: LatLng(
@@ -160,7 +168,28 @@ Future<void> _onPlaceSelected(dynamic place) async {
               ),
               infoWindow: InfoWindow(title: place['name']),
             ),
-          };
+          );
+
+          // Limpiar las polilíneas existentes
+          polylines.clear();
+
+          // Crear una nueva polilínea desde la ubicación del usuario al lugar seleccionado
+          if (userLatitude != null && userLongitude != null) {
+            polylines.add(
+              Polyline(
+                polylineId: const PolylineId('route'), // Un ID único para la polilínea
+                points: [
+                  LatLng(userLatitude!, userLongitude!), // Punto de inicio (ubicación del usuario)
+                  LatLng(
+                    place['geometry']['location']['lat'],
+                    place['geometry']['location']['lng'],
+                  ), // Punto de destino (lugar seleccionado)
+                ],
+                color: Colors.blue, // Color de la polilínea
+                width: 5, // Ancho de la polilínea
+              ),
+            );
+          }
 
           // Centrar el mapa en el lugar seleccionado
           mapController.animateCamera(
@@ -186,25 +215,37 @@ Future<void> _onPlaceSelected(dynamic place) async {
     // Aquí puedes mostrar un mensaje al usuario
   }
 }
+
 void _showPlaceDetails() {
+  if (selectedPlace == null) {
+    // Manejo de error si selectedPlace es null
+    print('selectedPlace es null');
+    return; // O puedes mostrar un mensaje de error al usuario
+  }
+
   showModalBottomSheet(
     context: context,
     builder: (context) {
       return PlaceDetailsWidget(
-        name: selectedPlace['name'],
+        name: selectedPlace['name'] ?? 'Nombre no disponible', // Valor por defecto
         rating: (selectedPlace['rating'] is int)
             ? (selectedPlace['rating'] as int).toDouble()
-            : selectedPlace['rating'] ?? 0.0,
-        openNow: selectedPlace['opening_hours'] != null 
-            ? selectedPlace['opening_hours']['open_now'] ?? false 
+            : (selectedPlace['rating'] ?? 0.0), // Valor por defecto
+
+        openNow: selectedPlace['opening_hours'] != null && 
+                 selectedPlace['opening_hours']['open_now'] != null 
+            ? selectedPlace['opening_hours']['open_now'] 
             : false, // Manejo de null
+
         photos: (selectedPlace['photos'] != null)
             ? (selectedPlace['photos'] as List<dynamic>).cast<String>()
             : <String>[],
+
         reviews: (selectedPlace['reviews'] != null && selectedPlace['reviews'] is List)
-            ? (selectedPlace['reviews'] as List<dynamic>).cast<String>() // Asegúrate de que sea una lista de strings
+            ? (selectedPlace['reviews'] as List<dynamic>).cast<String>()
             : <String>[], // Inicializa como lista vacía de strings
-        openingHours: selectedPlace['opening_hours'], // Nueva adición
+
+        openingHours: selectedPlace['opening_hours'] ?? {}, // Nueva adición
       );
     },
   );
@@ -215,74 +256,80 @@ void _showPlaceDetails() {
 
 
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Ubicación en el Mapa'),
-      ),
-      body: Column(
-        children: [
-          // Mapa
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.4,
-            child: MapWidget(
-              latitude: userLatitude ?? 0.0, // Usa la latitud del usuario
-              longitude: userLongitude ?? 0.0, // Usa la longitud del usuario
-              markers: markers,
-              onMapCreated: (controller) {
-                mapController = controller;
-                // Centrar el mapa en la ubicación del usuario
-                if (userLatitude != null && userLongitude != null) {
-                  mapController.animateCamera(
-                    CameraUpdate.newLatLng(
-                      LatLng(userLatitude!, userLongitude!),
-                    ),
-                  );
-                }
-              },
-              onPlaceSelected: (LatLng position) {
-                // Puedes manejar la selección adicional si es necesario
-              },
-            ),
-          ),
-          // Categorías
-          CategorySelectorWidget(
-            categories: const [
-              'Iglesias',
-              'Restaurantes',
-              'Monumentos',
-              'Edificios históricos',
-              'Playas',
-              'Reservas Naturales',
-              'Parques',
-              'Tiendas de conveniencia',
-              'Centros comerciales',
-              'Volcanes',
-              'Montañas',
-              'Islas',
-            ],
-            selectedCategory: selectedCategory,
-            onCategoryChanged: (category) {
-              setState(() {
-                selectedCategory = category;
-                isLoadingPlaces = true;
-              });
-              fetchNearbyPlaces();
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+      title: const Text('Ubicación en el Mapa'),
+    ),
+    body: Column(
+      children: [
+        // Mapa
+        SizedBox(
+          height: MediaQuery.of(context).size.height * 0.4,
+          child: MapWidget(
+            latitude: userLatitude ?? 0.0, // Usa la latitud del usuario
+            longitude: userLongitude ?? 0.0, // Usa la longitud del usuario
+            markers: markers,
+            onMapCreated: (controller) {
+              mapController = controller;
+              // Centrar el mapa en la ubicación del usuario
+              if (userLatitude != null && userLongitude != null) {
+                mapController.animateCamera(
+                  CameraUpdate.newLatLng(
+                    LatLng(userLatitude!, userLongitude!),
+                  ),
+                );
+              }
+            },
+            // Ahora este método se llama cuando se selecciona un lugar
+            onPlaceSelected: (LatLng position) {
+              // Actualiza la ruta en el mapa con la nueva posición
+              mapController.animateCamera(CameraUpdate.newLatLng(position));
+              // Aquí puedes agregar cualquier lógica adicional que necesites
             },
           ),
-
-          // Lista de Lugares
-          isLoadingPlaces
-              ? const Center(child: CircularProgressIndicator())
-              : Expanded(
-                  child: PlaceListWidget(
-                    places: places,
-                    onPlaceSelected: _onPlaceSelected,
-                  ),
+        ),
+        // Categorías
+        CategorySelectorWidget(
+          categories: const [
+            'Iglesias',
+            'Restaurantes',
+            'Monumentos',
+            'Edificios históricos',
+            'Playas',
+            'Reservas Naturales',
+            'Parques',
+            'Tiendas de conveniencia',
+            'Centros comerciales',
+            'Volcanes',
+            'Montañas',
+            'Islas',
+          ],
+          selectedCategory: selectedCategory,
+          onCategoryChanged: (category) {
+            setState(() {
+              selectedCategory = category;
+              isLoadingPlaces = true;
+            });
+            fetchNearbyPlaces();
+          },
+        ),
+        // Lista de Lugares
+        isLoadingPlaces
+            ? const Center(child: CircularProgressIndicator())
+            : Expanded(
+                child: PlaceListWidget(
+                  places: places,
+                  onPlaceSelected: (place, position) {
+                    _onPlaceSelected(place, position);
+                    
+                  },
                 ),
-        ],
-      ),
-    );
-  }
+              ),
+      ],
+    ),
+  );
+}
+
 }

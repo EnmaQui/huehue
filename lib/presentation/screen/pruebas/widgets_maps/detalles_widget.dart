@@ -153,7 +153,6 @@ class PlaceDetailsWidget extends StatelessWidget {
   }
 }
 Widget _buildOpeningHours(Map<String, dynamic> openingHours) {
-  final periods = openingHours['periods'] ?? [];
   final weekdayText = openingHours['weekday_text'] ?? [];
 
   return Container(
