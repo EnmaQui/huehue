@@ -1,8 +1,7 @@
-// ignore_for_file: unused_element, library_private_types_in_public_api
-
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 
@@ -26,20 +25,41 @@ class MapScreen extends StatefulWidget {
   @override
   _MapScreenState createState() => _MapScreenState();
 }
-
 class _MapScreenState extends State<MapScreen> {
   late GoogleMapController mapController;
+  List<Polyline> polylines = [];
   Set<Marker> markers = {};
   String selectedCategory = 'Iglesias';
   List<dynamic> places = [];
   bool isLoadingPlaces = true;
   dynamic selectedPlace;
+  double? userLatitude; // Para almacenar la latitud del usuario
+  double? userLongitude; // Para almacenar la longitud del usuario
 
   @override
   void initState() {
     super.initState();
-    fetchNearbyPlaces();
+    _getUserLocation(); // Obtener la ubicación del usuario
   }
+
+
+  // Método para obtener la ubicación del usuario
+  Future<void> _getUserLocation() async {
+    LocationPermission permission = await Geolocator.requestPermission();
+    if (permission == LocationPermission.denied) {
+      // Manejar el caso en que el permiso es denegado
+      return;
+    }
+    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    setState(() {
+      userLatitude = position.latitude;
+      userLongitude = position.longitude;
+    });
+    fetchNearbyPlaces(); // Llama a la función para obtener lugares cercanos
+  }
+
+
+
 
 Future<void> fetchNearbyPlaces() async {
   const String apiKey = 'AIzaSyCNNLly_rF6NkMMgoFAl5dv8lfCmu00mnY';
@@ -187,6 +207,10 @@ String _getTypeFromCategory(String category) {
     );
   }
 
+
+
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -199,11 +223,19 @@ String _getTypeFromCategory(String category) {
           SizedBox(
             height: MediaQuery.of(context).size.height * 0.4,
             child: MapWidget(
-              latitude: widget.latitude,
-              longitude: widget.longitude,
+              latitude: userLatitude ?? 0.0, // Usa la latitud del usuario
+              longitude: userLongitude ?? 0.0, // Usa la longitud del usuario
               markers: markers,
               onMapCreated: (controller) {
                 mapController = controller;
+                // Centrar el mapa en la ubicación del usuario
+                if (userLatitude != null && userLongitude != null) {
+                  mapController.animateCamera(
+                    CameraUpdate.newLatLng(
+                      LatLng(userLatitude!, userLongitude!),
+                    ),
+                  );
+                }
               },
               onPlaceSelected: (LatLng position) {
                 // Puedes manejar la selección adicional si es necesario
@@ -230,9 +262,9 @@ String _getTypeFromCategory(String category) {
             onCategoryChanged: (category) {
               setState(() {
                 selectedCategory = category;
-                isLoadingPlaces = true; // Mostrar el indicador de carga
+                isLoadingPlaces = true;
               });
-              fetchNearbyPlaces(); // Volver a cargar lugares
+              fetchNearbyPlaces();
             },
           ),
 
@@ -243,7 +275,6 @@ String _getTypeFromCategory(String category) {
                   child: PlaceListWidget(
                     places: places,
                     onPlaceSelected: _onPlaceSelected,
-                    isLoading: isLoadingPlaces,
                   ),
                 ),
         ],

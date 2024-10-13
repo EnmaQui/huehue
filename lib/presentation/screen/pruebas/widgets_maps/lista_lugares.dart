@@ -9,13 +9,13 @@ class PlaceListWidget extends StatelessWidget {
     super.key,
     required this.places,
     required this.onPlaceSelected,
-    this.isLoading = false,
+    this.isLoading = false, // Estado para indicar carga
   });
 
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
-      return const Center(child: CircularProgressIndicator());
+      return const Center(child: CircularProgressIndicator()); // Indicador de carga
     }
 
     if (places.isEmpty) {
@@ -51,7 +51,7 @@ class PlaceListWidget extends StatelessWidget {
                     ],
                   )
                 : null,
-            onTap: () => onPlaceSelected(place),
+            onTap: () => onPlaceSelected(place), // Acción de selección
             leading: place['photos'] != null && place['photos'].isNotEmpty
                 ? ClipOval(
                     child: Image.network(
@@ -61,7 +61,7 @@ class PlaceListWidget extends StatelessWidget {
                       fit: BoxFit.cover,
                     ),
                   )
-                : null,
+                : const Icon(Icons.location_on, size: 40), // Placeholder si no hay foto
           ),
         );
       },
