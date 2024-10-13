@@ -1,8 +1,11 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import '../departments_details_screen.dart'; // Importamos la nueva vista
 class DepartmentsSlider extends StatefulWidget {
   final String title;
   final int colorIndex;
@@ -33,7 +36,8 @@ class _DepartmentsSliderState extends State<DepartmentsSlider> {
     {'name': 'RAAN', 'placeId': 'ChIJ828chdnkEI8RfB3WTR7D8Do'},
     {'name': 'RAAS', 'placeId': 'ChIJ6chW8QYIDI8RpB4DOlSmD1k'},
   ];
-  late Future<List<String>> _imageUrls;
+  
+    late Future<List<String>> _imageUrls;
 
 Future<List<String>> fetchImageUrls() async {
     List<String> imageUrls = [];
@@ -46,7 +50,7 @@ Future<List<String>> fetchImageUrls() async {
         final data = json.decode(response.body);
         if (data['result'] != null && data['result']['photos'] != null && data['result']['photos'].isNotEmpty) {
           // Solo añade la URL de la primera foto (si existe)
-          String photoReference = data['result']['photos'][2]['photo_reference'];
+          String photoReference = data['result']['photos'][5]['photo_reference'];
           String imageUrl =
     'https://maps.googleapis.com/maps/api/place/photo?maxwidth=1280&maxheight=720&photoreference=$photoReference&key=AIzaSyCNNLly_rF6NkMMgoFAl5dv8lfCmu00mnY';
           imageUrls.add(imageUrl);
@@ -62,7 +66,7 @@ Future<List<String>> fetchImageUrls() async {
     
     return imageUrls;
   }
-
+  // El método fetchImageUrls sigue igual...
 
   @override
   void initState() {
@@ -70,9 +74,9 @@ Future<List<String>> fetchImageUrls() async {
     _imageUrls = fetchImageUrls();
   }
 
-@override
-Widget build(BuildContext context) {
-    final List<Color> sliderColors = [
+  @override
+  Widget build(BuildContext context) {
+        final List<Color> sliderColors = [
       const Color(0xFFf0436d),
       const Color(0xFFf37a6f),
       const Color(0xFFebd36e),
@@ -112,40 +116,51 @@ Widget build(BuildContext context) {
                     final departamento = departamentos[index];
                     final imageUrl = snapshot.data![index];
 
-                    return AnimatedContainer(
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeInOut,
-                      width: containerWidth,
-                      margin: const EdgeInsets.symmetric(horizontal: 5),
-                      decoration: BoxDecoration(
-                        color: sliderColors[widget.colorIndex],
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Stack(
-                        children: [
-                          AspectRatio(
-                            aspectRatio: 16 / 9, // Establece la relación de aspecto
-                            child: Image.network(
-                              imageUrl,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return const Center(child: Icon(Icons.error));
-                              },
-                            ),
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => PlaceDetailsScreen(placeId: departamento['placeId']!),
                           ),
-                          Positioned(
-                            bottom: 8,
-                            right: 8,
-                            child: Container(
-                              padding: const EdgeInsets.all(4.0),
-                              color: Colors.black54,
-                              child: Text(
-                                departamento['name']!,
-                                style: const TextStyle(color: Colors.white),
+                        );
+                      },
+
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeInOut,
+                        width: containerWidth,
+                        margin: const EdgeInsets.symmetric(horizontal: 5),
+                        decoration: BoxDecoration(
+                          color: sliderColors[widget.colorIndex],
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Stack(
+                          children: [
+                            AspectRatio(
+                              aspectRatio: 16 / 9, 
+                              child: Image.network(
+                                imageUrl,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return const Center(child: Icon(Icons.error));
+                                },
                               ),
                             ),
-                          ),
-                        ],
+                            Positioned(
+                              bottom: 8,
+                              right: 8,
+                              child: Container(
+                                padding: const EdgeInsets.all(4.0),
+                                color: Colors.black54,
+                                child: Text(
+                                  departamento['name']!,
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     );
                   },

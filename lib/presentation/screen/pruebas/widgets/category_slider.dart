@@ -62,7 +62,7 @@ class CategorySlider extends StatelessWidget {
                       color: Colors.black.withOpacity(0.2), // Sombra para profundidad
                       blurRadius: 6,
                       spreadRadius: 2,
-                      offset: const Offset(2, 2),
+                      offset: const Offset(2, 2), 
                     ),
                   ],
                 ),
