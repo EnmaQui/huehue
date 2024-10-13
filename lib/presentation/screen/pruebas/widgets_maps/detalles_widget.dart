@@ -5,7 +5,8 @@ class PlaceDetailsWidget extends StatelessWidget {
   final double rating;
   final bool openNow;
   final List<String> photos;
-  final List<dynamic> reviews; // Agregado para las reseñas
+  final List<String> reviews; // Cambiado a List<String>
+  final Map<String, dynamic> openingHours;
 
   const PlaceDetailsWidget({
     Key? key,
@@ -13,7 +14,8 @@ class PlaceDetailsWidget extends StatelessWidget {
     required this.rating,
     required this.openNow,
     required this.photos,
-    required this.reviews, // Requerido
+    required this.reviews,
+    required this.openingHours,
   }) : super(key: key);
 
   @override
@@ -66,12 +68,11 @@ class PlaceDetailsWidget extends StatelessWidget {
               ),
               const SizedBox(height: 12),
 
-              // Visualización de imágenes
+              // Carrusel de imágenes
               if (photos.isNotEmpty)
                 SizedBox(
-                  height: 120,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
+                  height: 200,
+                  child: PageView.builder(
                     itemCount: photos.length,
                     itemBuilder: (context, index) {
                       return GestureDetector(
@@ -86,21 +87,16 @@ class PlaceDetailsWidget extends StatelessWidget {
                             ),
                           );
                         },
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 5),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
-                            child: Hero(
-                              tag: photos[index],
-                              child: Image.network(
-                                photos[index],
-                                height: 100,
-                                width: 150,
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return const Icon(Icons.broken_image, size: 100);
-                                },
-                              ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: Hero(
+                            tag: photos[index],
+                            child: Image.network(
+                              photos[index],
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return const Icon(Icons.broken_image, size: 100);
+                              },
                             ),
                           ),
                         ),
@@ -116,6 +112,16 @@ class PlaceDetailsWidget extends StatelessWidget {
 
               const SizedBox(height: 12),
 
+              // Tabla de horarios de apertura
+              const Text(
+                'Horarios de Apertura',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              _buildOpeningHours(openingHours),
+
+              const SizedBox(height: 12),
+
               // Tabla de reseñas
               const Text(
                 'Reseñas',
@@ -124,7 +130,7 @@ class PlaceDetailsWidget extends StatelessWidget {
               const SizedBox(height: 8),
 
               // Lista de reseñas
-              for (var review in reviews) 
+              for (var review in reviews)
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4),
                   child: Card(
@@ -133,7 +139,7 @@ class PlaceDetailsWidget extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
-                        review['text'] ?? 'Sin reseña', // Asegúrate de que la clave sea correcta
+                        review, // Asumimos que es un String
                         style: const TextStyle(fontSize: 16),
                       ),
                     ),
@@ -146,6 +152,84 @@ class PlaceDetailsWidget extends StatelessWidget {
     );
   }
 }
+Widget _buildOpeningHours(Map<String, dynamic> openingHours) {
+  final periods = openingHours['periods'] ?? [];
+  final weekdayText = openingHours['weekday_text'] ?? [];
+
+  return Container(
+    decoration: BoxDecoration(
+      color: Colors.white,
+      border: Border.all(color: Colors.grey[400]!),
+      borderRadius: BorderRadius.circular(10),
+    ),
+    child: Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Table(
+        border: TableBorder.all(color: Colors.grey[300]!),
+        columnWidths: const {
+          0: FlexColumnWidth(1.5),
+          1: FlexColumnWidth(1),
+        },
+        children: [
+          // Encabezado de la tabla
+          TableRow(
+            decoration: BoxDecoration(color: Colors.grey[200]),
+            children: const [
+              Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Text(
+                  'Día',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Text(
+                  'Horario',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
+          ),
+          // Filas de los horarios
+          for (var dayInfo in weekdayText)
+            TableRow(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    dayInfo.split(':')[0], // Obtiene el día (antes de los dos puntos)
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    dayInfo.substring(dayInfo.indexOf(':') + 1).trim(), // Obtiene el horario (todo después de los dos puntos)
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                ),
+              ],
+            ),
+          // Mensaje si no hay horarios
+          if (weekdayText.isEmpty)
+            const TableRow(
+              children: [
+                Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text('No hay horarios disponibles', style: TextStyle(fontSize: 16)),
+                ),
+                SizedBox.shrink(),
+              ],
+            ),
+        ],
+      ),
+    ),
+  );
+}
+
+
+
 
 class FullScreenImage extends StatelessWidget {
   final String imageUrl;
@@ -163,7 +247,7 @@ class FullScreenImage extends StatelessWidget {
       backgroundColor: Colors.black,
       body: Center(
         child: Hero(
-          tag: imageUrl, // Usamos Hero para animar la transición de la imagen
+          tag: imageUrl,
           child: Image.network(
             imageUrl,
             fit: BoxFit.contain,

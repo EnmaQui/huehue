@@ -124,88 +124,92 @@ String _getTypeFromCategory(String category) {
 }
 
 
-  Future<void> _onPlaceSelected(dynamic place) async {
-    const String apiKey = 'AIzaSyCNNLly_rF6NkMMgoFAl5dv8lfCmu00mnY'; // Asegúrate de usar tu API Key
-    final String placeId = place['place_id'];
+Future<void> _onPlaceSelected(dynamic place) async {
+  const String apiKey = 'AIzaSyCNNLly_rF6NkMMgoFAl5dv8lfCmu00mnY'; // Asegúrate de usar tu API Key
+  final String placeId = place['place_id'];
 
-    final url = Uri.parse(
-      'https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&key=$apiKey',
-    );
+  final url = Uri.parse(
+    'https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&key=$apiKey',
+  );
 
-    try {
-      final response = await http.get(url);
+  try {
+    final response = await http.get(url);
 
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
 
-        if (data['result'] != null) { // Verificar si se encontraron detalles
-          setState(() {
-            selectedPlace = {
-              'name': data['result']['name'],
-              'rating': data['result']['rating'],
-              'opening_hours': data['result']['opening_hours'],
-              'photos': data['result']['photos']?.map((photo) {
-                return 'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photo['photo_reference']}&key=$apiKey';
-              }).toList() ?? [],
-            };
+      if (data['result'] != null) { // Verificar si se encontraron detalles
+        setState(() {
+          selectedPlace = {
+            'name': data['result']['name'],
+            'rating': data['result']['rating'],
+            'opening_hours': data['result']['opening_hours'],
+            'photos': data['result']['photos']?.map((photo) {
+              return 'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photo['photo_reference']}&key=$apiKey';
+            }).toList() ?? [],
+          };
+          print('Selected Place: $selectedPlace'); // Impresión para depuración
 
-            // Actualizar los marcadores para mostrar solo el lugar seleccionado
-            markers = {
-              Marker(
-                markerId: MarkerId(placeId),
-                position: LatLng(
-                  place['geometry']['location']['lat'],
-                  place['geometry']['location']['lng'],
-                ),
-                infoWindow: InfoWindow(title: place['name']),
+          // Actualizar los marcadores para mostrar solo el lugar seleccionado
+          markers = {
+            Marker(
+              markerId: MarkerId(placeId),
+              position: LatLng(
+                place['geometry']['location']['lat'],
+                place['geometry']['location']['lng'],
               ),
-            };
+              infoWindow: InfoWindow(title: place['name']),
+            ),
+          };
 
-            // Centrar el mapa en el lugar seleccionado
-            mapController.animateCamera(
-              CameraUpdate.newLatLng(
-                LatLng(
-                  place['geometry']['location']['lat'],
-                  place['geometry']['location']['lng'],
-                ),
+          // Centrar el mapa en el lugar seleccionado
+          mapController.animateCamera(
+            CameraUpdate.newLatLng(
+              LatLng(
+                place['geometry']['location']['lat'],
+                place['geometry']['location']['lng'],
               ),
-            );
+            ),
+          );
 
-            // Mostrar los detalles del lugar
-            _showPlaceDetails();
-          });
-        } else {
-          throw Exception('No se encontraron detalles para el lugar seleccionado');
-        }
+          // Mostrar los detalles del lugar
+          _showPlaceDetails();
+        });
       } else {
-        throw Exception('Error al obtener detalles del lugar');
+        throw Exception('No se encontraron detalles para el lugar seleccionado');
       }
-    } catch (error) {
-      print('Error en _onPlaceSelected: $error');
-      // Aquí puedes mostrar un mensaje al usuario
+    } else {
+      throw Exception('Error al obtener detalles del lugar');
     }
+  } catch (error) {
+    print('Error en _onPlaceSelected: $error');
+    // Aquí puedes mostrar un mensaje al usuario
   }
+}
+void _showPlaceDetails() {
+  showModalBottomSheet(
+    context: context,
+    builder: (context) {
+      return PlaceDetailsWidget(
+        name: selectedPlace['name'],
+        rating: (selectedPlace['rating'] is int)
+            ? (selectedPlace['rating'] as int).toDouble()
+            : selectedPlace['rating'] ?? 0.0,
+        openNow: selectedPlace['opening_hours'] != null 
+            ? selectedPlace['opening_hours']['open_now'] ?? false 
+            : false, // Manejo de null
+        photos: (selectedPlace['photos'] != null)
+            ? (selectedPlace['photos'] as List<dynamic>).cast<String>()
+            : <String>[],
+        reviews: (selectedPlace['reviews'] != null && selectedPlace['reviews'] is List)
+            ? (selectedPlace['reviews'] as List<dynamic>).cast<String>() // Asegúrate de que sea una lista de strings
+            : <String>[], // Inicializa como lista vacía de strings
+        openingHours: selectedPlace['opening_hours'], // Nueva adición
+      );
+    },
+  );
+}
 
-  void _showPlaceDetails() {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return PlaceDetailsWidget(
-          name: selectedPlace['name'],
-          rating: (selectedPlace['rating'] is int)
-              ? (selectedPlace['rating'] as int).toDouble()
-              : selectedPlace['rating'] ?? 0.0,
-          openNow: selectedPlace['opening_hours']?['open_now'] ?? false,
-          photos: (selectedPlace['photos'] != null)
-              ? (selectedPlace['photos'] as List<dynamic>).cast<String>()
-              : <String>[], // Lista vacía si no hay fotos
-          reviews: (selectedPlace['reviews'] != null)
-              ? (selectedPlace['reviews'] as List<dynamic>)
-              : <dynamic>[], // Lista vacía si no hay reseñas
-        );
-      },
-    );
-  }
 
 
 
