@@ -4,6 +4,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:huehue/presentation/widgets/list/BaseListWidget.dart';
 
 import '../departments_details_screen.dart'; // Importamos la nueva vista
 class DepartmentsSlider extends StatefulWidget {
@@ -130,7 +131,7 @@ Future<List<String>> fetchImageUrls() async {
                         duration: const Duration(milliseconds: 300),
                         curve: Curves.easeInOut,
                         width: containerWidth,
-                        margin: const EdgeInsets.symmetric(horizontal: 5),
+                        // margin: const EdgeInsets.symmetric(horizontal: 5),
                         decoration: BoxDecoration(
                           color: sliderColors[widget.colorIndex],
                           borderRadius: BorderRadius.circular(10),

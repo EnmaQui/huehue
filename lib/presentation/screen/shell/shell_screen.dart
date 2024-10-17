@@ -17,17 +17,15 @@ class _ShellScreenState extends State<ShellScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: PageView(
-          controller: _pageController,
-          physics: const NeverScrollableScrollPhysics(),
-          children: const [
-            HomeScreen(),
-            MapScreen(),
-            ExplorarScreen(),
-            PruebasScreen(),
-          ],
-        ),
+      body: PageView(
+        controller: _pageController,
+        physics: const NeverScrollableScrollPhysics(),
+        children: const [
+          HomeScreen(),
+          MapScreen(),
+          ExplorarScreen(),
+          PruebasScreen(),
+        ],
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[

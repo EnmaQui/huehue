@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:huehue/presentation/widgets/list/BaseListWidget.dart';
 
 class PlaceListWidget extends StatelessWidget {
   final List<dynamic> places;
@@ -23,7 +24,7 @@ class PlaceListWidget extends StatelessWidget {
       return const Center(child: Text('No se encontraron lugares.'));
     }
 
-    return ListView.builder(
+    return BaseListWidget(
       itemCount: places.length,
       itemBuilder: (context, index) {
         final place = places[index];
@@ -34,7 +35,7 @@ class PlaceListWidget extends StatelessWidget {
 
         return Card(
           elevation: 4,
-          margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+          // margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
           child: ListTile(
             contentPadding: const EdgeInsets.all(10),
             title: Text(

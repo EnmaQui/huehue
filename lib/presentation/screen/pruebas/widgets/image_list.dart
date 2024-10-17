@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:huehue/presentation/widgets/list/BaseListWidget.dart';
 
 class ImageList extends StatefulWidget {
   const ImageList({super.key});
@@ -49,14 +50,14 @@ class _ImageListState extends State<ImageList> {
         } else {
           final places = snapshot.data!;
 
-          return ListView.builder(
-            physics: const NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
+          return BaseListWidget(
+            // physics: const NeverScrollableScrollPhysics(),
+            // shrinkWrap: true,
             itemCount: places.length,
             itemBuilder: (context, index) {
               return Container(
                 height: 150,
-                margin: const EdgeInsets.all(8.0),
+                // margin: const EdgeInsets.all(8.0),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   // Aquí se utiliza la imagen de fondo

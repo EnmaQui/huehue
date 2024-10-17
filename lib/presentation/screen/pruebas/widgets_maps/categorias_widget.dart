@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:huehue/presentation/widgets/list/BaseListWidget.dart';
 
 class CategorySelectorWidget extends StatelessWidget {
   final List<String> categories;
@@ -16,7 +17,7 @@ class CategorySelectorWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       height: 60, // Aumentar la altura para un mejor aspecto
-      child: ListView.builder(
+      child: BaseListWidget(
         scrollDirection: Axis.horizontal,
         itemCount: categories.length,
         itemBuilder: (context, index) {
@@ -24,7 +25,7 @@ class CategorySelectorWidget extends StatelessWidget {
           return GestureDetector(
             onTap: () => onCategoryChanged(categories[index]),
             child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 8), // Espaciado entre los botones
+              // margin: const EdgeInsets.symmetric(horizontal: 8), // Espaciado entre los botones
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10), // Padding vertical para más espacio
               alignment: Alignment.center,
               decoration: BoxDecoration(

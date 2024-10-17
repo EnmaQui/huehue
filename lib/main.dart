@@ -28,12 +28,12 @@ void main() async {
 
 void setSystemChrome() {
   if (Platform.isAndroid) {
-    SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.dark,
-      ),
-    );
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge,
+        overlays: [SystemUiOverlay.top]);
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(
+      systemNavigationBarColor: Colors.transparent,
+      statusBarColor: Colors.transparent,
+    ));
   }
 
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
@@ -59,6 +59,13 @@ class _MyAppState extends State<MyApp> {
         title: 'Mapa Interactivo de Nicaragua',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
+          appBarTheme: const AppBarTheme(
+              elevation: 0,
+              scrolledUnderElevation: 0,
+              backgroundColor: Colors.transparent,
+              systemOverlayStyle: SystemUiOverlayStyle(
+                  statusBarIconBrightness: Brightness.dark)),
+          applyElevationOverlayColor: false,
           primarySwatch: Colors.blue,
         ),
         routes: appRoutes,

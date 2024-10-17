@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:huehue/presentation/widgets/list/BaseListWidget.dart';
 
 class CategorySlider extends StatelessWidget {
   final String title;
@@ -46,21 +47,25 @@ class CategorySlider extends StatelessWidget {
         ),
         SizedBox(
           height: 100, // Mantén la altura del slider
-          child: ListView.builder(
+          child: BaseListWidget(
+            padding: const EdgeInsets.symmetric(
+              vertical: 8,
+              horizontal: 12,
+            ),
             scrollDirection: Axis.horizontal,
             itemCount: categories.length, // Cambia a la longitud de la lista de categorías
             itemBuilder: (context, index) {
               return Container(
                 width: 80, // Ancho más amplio para un diseño más atractivo
                 height: 120, // Altura más grande para la elipse vertical
-                margin: const EdgeInsets.symmetric(horizontal: 8), // Mayor separación entre íconos
+                // margin: const EdgeInsets.symmetric(horizontal: 8), // Mayor separación entre íconos
                 decoration: BoxDecoration(
                   color: sliderColors[colorIndex],
-                  borderRadius: BorderRadius.circular(20), // Radio moderado para suavizar los bordes
+                  borderRadius: BorderRadius.circular(12), // Radio moderado para suavizar los bordes
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withOpacity(0.2), // Sombra para profundidad
-                      blurRadius: 6,
+                      blurRadius: 4,
                       spreadRadius: 2,
                       offset: const Offset(2, 2), 
                     ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:huehue/enum/StatusRequestEnum.dart';
 import 'package:huehue/presentation/blocs/place/place_bloc.dart';
+import 'package:huehue/presentation/widgets/list/BaseListWidget.dart';
 import 'package:url_launcher/url_launcher.dart'; // Asegúrate de importar el paquete
 import '../../widgets/photo_gallery.dart'; // Importa el nuevo widget de galería de fotos
 import '../../widgets/review_widget.dart'; // Asegúrate de importar tu widget de reseñas
@@ -198,7 +199,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen>
                             return false; // Permitir el desplazamiento vertical
                           },
                           child: review.isNotEmpty
-                              ? ListView.builder(
+                              ? BaseListWidget(
                                   itemCount: review.length,
                                   itemBuilder: (context, index) {
                                     return ReviewWidget(
@@ -210,7 +211,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen>
                                   },
                                 )
                               : const Center(
-                                  child: Text('No hay reseñas disponibles')),
+                                  child: Text('No hay reseñas disponibles'),),
                         ),
                           const SizedBox()
                         // if ((state.placeDetail?.openingHours.periods ?? []).isNotEmpty)
