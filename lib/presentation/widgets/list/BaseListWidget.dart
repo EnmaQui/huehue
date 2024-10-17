@@ -8,6 +8,7 @@ class BaseListWidget extends StatelessWidget {
     this.padding,
     this.scrollDirection = Axis.vertical,
     this.spacing = 12,
+    this.shrinkWrap = false,
   });
 
   final int itemCount;
@@ -15,10 +16,12 @@ class BaseListWidget extends StatelessWidget {
   final Axis scrollDirection;
   final Widget? Function(BuildContext, int) itemBuilder;
   final double spacing;
+  final bool shrinkWrap;
 
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
+      shrinkWrap: shrinkWrap,
       scrollDirection: scrollDirection,
       physics: const BouncingScrollPhysics(),
       itemCount: itemCount,

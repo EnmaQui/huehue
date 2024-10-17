@@ -50,6 +50,7 @@ dependencies:
   equatable: 2.0.5
   get_it: 8.0.0
   app_settings: 5.1.1
+  iconsax: 0.0.8
 
 dev_dependencies:
   flutter_test:

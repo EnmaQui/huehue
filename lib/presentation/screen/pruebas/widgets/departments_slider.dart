@@ -110,61 +110,64 @@ Future<List<String>> fetchImageUrls() async {
               } else if (snapshot.hasError) {
                 return const Center(child: Text('Error al cargar imágenes'));
               } else {
-                return ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: departamentos.length,
-                  itemBuilder: (context, index) {
-                    final departamento = departamentos[index];
-                    final imageUrl = snapshot.data![index];
-
-                    return GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => PlaceDetailsScreen(placeId: departamento['placeId']!),
-                          ),
-                        );
-                      },
-
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.easeInOut,
-                        width: containerWidth,
-                        // margin: const EdgeInsets.symmetric(horizontal: 5),
-                        decoration: BoxDecoration(
-                          color: sliderColors[widget.colorIndex],
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Stack(
-                          children: [
-                            AspectRatio(
-                              aspectRatio: 16 / 9, 
-                              child: Image.network(
-                                imageUrl,
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return const Center(child: Icon(Icons.error));
-                                },
-                              ),
+                return SizedBox(
+                  child: BaseListWidget(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 8,
+                      horizontal: 12,
+                    ),
+                    scrollDirection: Axis.horizontal,
+                    itemCount: departamentos.length,
+                    itemBuilder: (context, index) {
+                      final departamento = departamentos[index];
+                      final imageUrl = snapshot.data![index];
+                  
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PlaceDetailsScreen(placeId: departamento['placeId']!),
                             ),
-                            Positioned(
-                              bottom: 8,
-                              right: 8,
-                              child: Container(
-                                padding: const EdgeInsets.all(4.0),
-                                color: Colors.black54,
-                                child: Text(
-                                  departamento['name']!,
-                                  style: const TextStyle(color: Colors.white),
+                          );
+                        },
+                  
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                          width: containerWidth,
+                          // margin: const EdgeInsets.symmetric(horizontal: 5),
+                          decoration: BoxDecoration(
+                            // color: sliderColors[widget.colorIndex],
+                            borderRadius: BorderRadius.circular(12),
+                            image: DecorationImage(
+                              image: NetworkImage(imageUrl),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          child: Stack(
+                            children: [
+                              const AspectRatio(
+                                aspectRatio: 16 / 9, 
+                              ),
+                              Positioned(
+                                bottom: 8,
+                                right: 8,
+                                child: Container(
+                                  padding: const EdgeInsets.all(4.0),
+                                  color: Colors.black54,
+                                  child: Text(
+                                    departamento['name']!,
+                                    style: const TextStyle(color: Colors.white),
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 );
               }
             },

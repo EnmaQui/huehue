@@ -40,20 +40,20 @@ class PruebasScreen extends StatelessWidget {
           ),
           SliverList(
             delegate: SliverChildListDelegate([
-              DepartmentsSlider(title: "Departamentos", colorIndex: 1),  // Slider 2
-              // SizedBox(height: 20),
-              // Padding(
-              //   padding: EdgeInsets.all(8.0),
-              //   child: Text(
-              //     'Lugares más visitados',
-              //     style: TextStyle(
-              //       fontSize: 18,
-              //       fontWeight: FontWeight.bold,
-              //       color: Color(0xFF0e647e),
-              //     ),
-              //   ),
-              // ),
-              // ImageList(),  // Lista de imágenes
+              const DepartmentsSlider(title: "Departamentos", colorIndex: 1),  // Slider 2
+              const SizedBox(height: 20),
+              const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Text(
+                  'Lugares más visitados',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF0e647e),
+                  ),
+                ),
+              ),
+              const ImageList(),  // Lista de imágenes
             ],),
           )
         ],

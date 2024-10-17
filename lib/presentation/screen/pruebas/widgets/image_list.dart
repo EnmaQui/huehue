@@ -50,63 +50,69 @@ class _ImageListState extends State<ImageList> {
         } else {
           final places = snapshot.data!;
 
-          return BaseListWidget(
-            // physics: const NeverScrollableScrollPhysics(),
-            // shrinkWrap: true,
-            itemCount: places.length,
-            itemBuilder: (context, index) {
-              return Container(
-                height: 150,
-                // margin: const EdgeInsets.all(8.0),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  // Aquí se utiliza la imagen de fondo
-                  image: DecorationImage(
-                    image: NetworkImage(
-                      'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${places[index].photoReference}&key=$apiKey',
-                    ),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                child: Container(
+          return SizedBox(
+            child: BaseListWidget(
+              // physics: const NeverScrollableScrollPhysics(),
+              padding: const EdgeInsets.symmetric(
+                vertical: 8,
+                horizontal: 12,
+              ),
+              shrinkWrap: true,
+              itemCount: places.length,
+              itemBuilder: (context, index) {
+                return Container(
+                  height: 150,
+                  // margin: const EdgeInsets.all(8.0),
                   decoration: BoxDecoration(
-                    color: Colors.black54, // Fondo negro semi-transparente
                     borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          places[index].name,
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Row(
-                          children: [
-                            buildStarRating(places[index].rating),
-                            const SizedBox(width: 8),
-                            Text(
-                              '${places[index].rating?.toStringAsFixed(1) ?? 'N/A'}',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
+                    // Aquí se utiliza la imagen de fondo
+                    image: DecorationImage(
+                      image: NetworkImage(
+                        'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${places[index].photoReference}&key=$apiKey',
+                      ),
+                      fit: BoxFit.cover,
                     ),
                   ),
-                ),
-              );
-            },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.black54, // Fondo negro semi-transparente
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            places[index].name,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Row(
+                            children: [
+                              buildStarRating(places[index].rating),
+                              const SizedBox(width: 8),
+                              Text(
+                                '${places[index].rating?.toStringAsFixed(1) ?? 'N/A'}',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
           );
         }
       },
