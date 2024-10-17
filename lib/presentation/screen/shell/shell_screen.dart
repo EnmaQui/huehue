@@ -56,7 +56,7 @@ class _ShellScreenState extends State<ShellScreen> {
                   children: [
                     GestureDetector(
                       onTap: () {
-                        _pageController.jumpToPage(3);
+                        _pageController.jumpToPage(0);
                       },
                       child: Container(
                         color: Colors.transparent,
