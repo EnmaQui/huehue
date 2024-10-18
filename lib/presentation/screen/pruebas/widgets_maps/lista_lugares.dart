@@ -26,6 +26,7 @@ class PlaceListWidget extends StatelessWidget {
 
     return BaseListWidget(
       itemCount: places.length,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       itemBuilder: (context, index) {
         final place = places[index];
         final LatLng position = LatLng(

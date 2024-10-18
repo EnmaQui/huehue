@@ -20,6 +20,10 @@ class CategorySelectorWidget extends StatelessWidget {
       child: BaseListWidget(
         scrollDirection: Axis.horizontal,
         itemCount: categories.length,
+        padding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 8
+        ),
         itemBuilder: (context, index) {
           final isSelected = selectedCategory == categories[index]; // Verificar si está seleccionado
           return GestureDetector(
