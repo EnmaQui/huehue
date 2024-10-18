@@ -49,9 +49,9 @@ class _MapWidgetState extends State<MapWidget> {
             mapController = controller;
             widget.onMapCreated(controller);
             // Centrar el mapa en la ubicación inicial
-            mapController.animateCamera(
-              CameraUpdate.newLatLng(LatLng(widget.latitude, widget.longitude)),
-            );
+            // mapController.animateCamera(
+            //   CameraUpdate.newLatLng(LatLng(widget.latitude, widget.longitude)),
+            // );
           },
           initialCameraPosition: CameraPosition(
             target: LatLng(widget.latitude, widget.longitude),

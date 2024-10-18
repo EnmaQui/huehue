@@ -128,7 +128,7 @@ class _PlaceDetailsScreenState extends State<PlaceDetailsScreen> {
                         ),
                       );
                     },
-                      child: const Text('Ver en Mapa Estático'),
+                      child: const Text('Ver en el mapa'),
                     ),
                   ],
                 )

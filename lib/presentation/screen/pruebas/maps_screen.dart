@@ -274,13 +274,11 @@ Widget build(BuildContext context) {
             onMapCreated: (controller) {
               mapController = controller;
               // Centrar el mapa en la ubicación del usuario
-              if (userLatitude != null && userLongitude != null) {
-                mapController.animateCamera(
+                controller.animateCamera(
                   CameraUpdate.newLatLng(
-                    LatLng(userLatitude!, userLongitude!),
+                    LatLng(widget.latitude, widget.longitude),
                   ),
                 );
-              }
             },
             // Ahora este método se llama cuando se selecciona un lugar
             onPlaceSelected: (LatLng position) {
