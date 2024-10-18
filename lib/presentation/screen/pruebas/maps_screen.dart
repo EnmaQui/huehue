@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
+import 'package:huehue/domain/entity/place/PlaceEntity.dart';
 import 'package:huehue/presentation/blocs/place/place_bloc.dart';
 import 'package:huehue/presentation/screen/pruebas/modal/MapDetailsPlace.dart';
 
@@ -136,10 +137,10 @@ class _MapScreenState extends State<MapScreen> {
     }
   }
 
-  Future<void> _onPlaceSelected(dynamic place, Object? position) async {
+  Future<void> _onPlaceSelected(PlaceEntity place, Object? position) async {
     const String apiKey =
         'AIzaSyCNNLly_rF6NkMMgoFAl5dv8lfCmu00mnY'; // Asegúrate de usar tu API Key
-    final String placeId = place['place_id'];
+    final String placeId = place.placeId;
 
     final url = Uri.parse(
       'https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&key=$apiKey',
@@ -172,11 +173,8 @@ class _MapScreenState extends State<MapScreen> {
             markers.add(
               Marker(
                 markerId: MarkerId(placeId),
-                position: LatLng(
-                  place['geometry']['location']['lat'],
-                  place['geometry']['location']['lng'],
-                ),
-                infoWindow: InfoWindow(title: place['name']),
+                position: place.coordinates,
+                infoWindow: InfoWindow(title:place.name),
               ),
             );
 
@@ -192,10 +190,7 @@ class _MapScreenState extends State<MapScreen> {
                   points: [
                     LatLng(userLatitude!,
                         userLongitude!), // Punto de inicio (ubicación del usuario)
-                    LatLng(
-                      place['geometry']['location']['lat'],
-                      place['geometry']['location']['lng'],
-                    ), // Punto de destino (lugar seleccionado)
+                    place.coordinates// Punto de destino (lugar seleccionado)
                   ],
                   color: Colors.blue, // Color de la polilínea
                   width: 5, // Ancho de la polilínea
@@ -206,10 +201,7 @@ class _MapScreenState extends State<MapScreen> {
             // Centrar el mapa en el lugar seleccionado
             mapController.animateCamera(
               CameraUpdate.newLatLng(
-                LatLng(
-                  place['geometry']['location']['lat'],
-                  place['geometry']['location']['lng'],
-                ),
+                place.coordinates
               ),
             );
 
@@ -282,6 +274,7 @@ class _MapScreenState extends State<MapScreen> {
               target: LatLng(widget.latitude, widget.longitude),
               zoom: 15,
             ),
+             markers: markers,
             // markers: state.pulperiasByRadius
             //     .map(
             //       (element) => Marker(
@@ -355,7 +348,11 @@ class _MapScreenState extends State<MapScreen> {
             ),
           ),
         ),
-        const MapDetailsPlace(),
+          MapDetailsPlace(
+          onTap: (place, location) {
+            _onPlaceSelected(place, location);
+          }
+        ),
       ]),
     );
   }

@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:huehue/const/data.const.dart';
+import 'package:huehue/domain/entity/place/PlaceEntity.dart';
 import 'package:huehue/enum/StatusRequestEnum.dart';
 import 'package:huehue/presentation/blocs/place/place_bloc.dart';
 import 'package:responsive_grid/responsive_grid.dart';
 
 class MapDetailsPlace extends StatelessWidget {
-  const MapDetailsPlace({super.key});
+  const MapDetailsPlace({super.key, required this.onTap});
+
+  final Function(PlaceEntity place, LatLng position) onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -105,6 +109,7 @@ class MapDetailsPlace extends StatelessWidget {
                                     //     : null,
                                     onTap: () {
                                       // onPlaceSelected(place, position); // Pasa la posición del lugar seleccionado
+                                      onTap(element, element.coordinates);
                                     },
                                     leading: element.photos.isNotEmpty
                                         ? ClipOval(
