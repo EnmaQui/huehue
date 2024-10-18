@@ -43,6 +43,11 @@ class _MapScreenState extends State<MapScreen> {
   @override
   void initState() {
     super.initState();
+    final placeBloc = context.read<PlaceBloc>();
+    placeBloc.add(FilterPlaceByTypeEvent(
+      type: _getTypeFromCategory(placeBloc.state.selectedCategory),
+      location: LatLng(widget.latitude, widget.longitude),
+    ));
     _getUserLocation(); // Obtener la ubicación del usuario
   }
 
@@ -340,11 +345,10 @@ class _MapScreenState extends State<MapScreen> {
                   selectedCategory: state.selectedCategory,
                   onCategoryChanged: (category) {
                     placeBloc.add(SetSelectedCategory(category: category));
-                    // setState(() {
-                    //   selectedCategory = category;
-                    //   isLoadingPlaces = true;
-                    // });
-                    // fetchNearbyPlaces();
+                    placeBloc.add(FilterPlaceByTypeEvent(
+                      type: _getTypeFromCategory(category),
+                      location: LatLng(widget.latitude, widget.longitude),
+                    ));
                   },
                 );
               },

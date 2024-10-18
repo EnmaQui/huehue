@@ -33,9 +33,14 @@ class GoogleMapDataSourceImpl extends GoogleMapDataSource {
   }
 
   @override
-  Future<List<PlaceModel>> getNearbyPlaces(LatLng userLocation) async {
-    final response = await _dio.get(
-        '/place/nearbysearch/json?location=${userLocation.latitude},${userLocation.longitude}&radius=5000&type=tourist_attraction|church|museum|park&key=${DataConst.googleApiKey}&language=es');
+
+  Future<List<PlaceModel>> getNearbyPlaces(
+      LatLng userLocation, int radius, String type) async {
+        final url = '/place/nearbysearch/json?location=${userLocation.latitude},${userLocation.longitude}&radius=$radius&type=$type&key=${DataConst.googleApiKey}&language=es';
+
+    final response = await _dio.get(url);
+
+    print(url);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return (response.data['results'] as List)
@@ -118,8 +123,6 @@ class GoogleMapDataSourceImpl extends GoogleMapDataSource {
       final reponse = await _dio.get(
         '/place/details/json?fields=name,rating,photos&place_id=$placeId&key=${DataConst.googleApiKey}',
       );
-
-      print(reponse);
 
       if (reponse.statusCode == 200 || reponse.statusCode == 201) {
         return PlaceMoreRaitingModel.fromJson(reponse.data['result']);

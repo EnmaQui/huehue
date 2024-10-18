@@ -5,12 +5,18 @@ class PlaceModel {
   final String name;
   final LatLng coordinates;
   final List<String> types;
+  final dynamic rating;
+  final String vicinity;
+  final List<String> photos;
 
   PlaceModel({
     required this.placeId,
     required this.name,
     required this.coordinates,
     required this.types,
+    required this.rating,
+    required this.vicinity,
+    required this.photos,
   });
 
   // Método para decodificar un JSON en un objeto PlaceModel
@@ -23,6 +29,9 @@ class PlaceModel {
         json['geometry']['location']['lng'],
       ),
       types: List<String>.from(json['types']),
+      rating: json['rating'],
+      vicinity: json['vicinity'],
+      photos: json['photos'] != null ? List<String>.from(json['photos'].map((photo) => photo['photo_reference'])) : [],
     );
   }
 }

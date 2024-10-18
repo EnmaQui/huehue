@@ -21,8 +21,8 @@ class GoogleMapRepositoryImpl extends GoogleMapRepository {
   }
   
   @override
-  Future<List<PlaceEntity>> getNearbyPlaces(LatLng userLocation) async {
-     final response = await googleMapDataSource.getNearbyPlaces(userLocation);
+  Future<List<PlaceEntity>> getNearbyPlaces(LatLng userLocation,  int radius, String type) async {
+     final response = await googleMapDataSource.getNearbyPlaces(userLocation, radius, type);
 
     if(response.isNotEmpty) {
       return response.map((e) => GoogleMapper.placeModeltoEntity(e)).toList();

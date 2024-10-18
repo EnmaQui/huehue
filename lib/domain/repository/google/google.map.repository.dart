@@ -4,7 +4,7 @@ import 'package:huehue/domain/entity/place/PlaceEntity.dart';
 
 abstract class GoogleMapRepository {
   Future<List<LatLng>> getRoutes(LatLng origin, LatLng destination);
-  Future<List<PlaceEntity>> getNearbyPlaces(LatLng userLocation);
+  Future<List<PlaceEntity>> getNearbyPlaces(LatLng userLocation,  int radius, String type);
   Future<PlaceDetailEntity?> getPlaceDetails(String placeId);
   Future<List<String>> fetchImageUrls(List<String> placeIds);
 }

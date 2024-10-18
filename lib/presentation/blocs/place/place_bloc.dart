@@ -78,13 +78,10 @@ class PlaceBloc extends Bloc<PlaceEvent, PlaceState> {
     FilterPlaceByTypeEvent event,
     Emitter<PlaceState> emit,
   ) async {
-    if(state.userLocation == null) return;
+    // if(state.userLocation == null) return;
 
     emit(state.copyWith(statusRequestPlace: StatusRequestEnum.pending));
-    final response = await googleMapRepository.getNearbyPlaces(LatLng(
-      state.userLocation!.latitude,
-      state.userLocation!.longitude,
-    ));
+    final response = await googleMapRepository.getNearbyPlaces(event.location, 1500, event.type);
 
      final filteredPlaces =
           response.where((place) => place.types.contains(event.type)).toList();
@@ -114,21 +111,21 @@ class PlaceBloc extends Bloc<PlaceEvent, PlaceState> {
       if (granted) {
         emit(state.copyWith(statusRequestPlace: StatusRequestEnum.pending));
 
-        final position = await LocationUtils.getCurrentLocation();
-        if (position != null) {
-          final response = await googleMapRepository.getNearbyPlaces(LatLng(
-            position.latitude,
-            position.longitude,
-          ));
+        // final position = await LocationUtils.getCurrentLocation();
+        // if (position != null) {
+        //   final response = await googleMapRepository.getNearbyPlaces(LatLng(
+        //     position.latitude,
+        //     position.longitude,
+        //   ));
 
-          emit(state.copyWith(
-            statusRequestPlace: StatusRequestEnum.success,
-            userLocation: position,
-            nearbyPlaces: response,
-          ));
-        } else {
-          emit(state.copyWith(statusRequestPlace: StatusRequestEnum.success));
-        }
+        //   emit(state.copyWith(
+        //     statusRequestPlace: StatusRequestEnum.success,
+        //     userLocation: position,
+        //     nearbyPlaces: response,
+        //   ));
+        // } else {
+        //   emit(state.copyWith(statusRequestPlace: StatusRequestEnum.success));
+        // }
       }
     } catch (e) {}
   }

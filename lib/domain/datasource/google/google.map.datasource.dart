@@ -6,7 +6,7 @@ import 'package:huehue/infrastructure/models/Place/PlaceReviewerModel.dart';
 
 abstract class GoogleMapDataSource {
   Future<List<LatLng>> getRoutes(LatLng origin, LatLng destination);
-  Future<List<PlaceModel>> getNearbyPlaces(LatLng userLocation);
+  Future<List<PlaceModel>> getNearbyPlaces(LatLng userLocation, int radius, String type);
   Future<PlaceDetailModel?> getPlaceDetails(String placeId);
   Future<PlaceMoreRaitingModel> getPlaceRatings(String placeId);
   Future<List<String>> getPlacePhotos(String placeId);

@@ -232,7 +232,7 @@ class _MapScreenState extends State<MapScreen>
   Widget _buildDrawer() {
     return CustomDrawer(
       onFilterSelected: (type) {
-        context.read<PlaceBloc>().add(FilterPlaceByTypeEvent(type: type));
+        // context.read<PlaceBloc>().add(FilterPlaceByTypeEvent(type: type));
       },
     );
   }

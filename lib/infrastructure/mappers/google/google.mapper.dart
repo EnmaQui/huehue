@@ -25,6 +25,9 @@ class GoogleMapper {
       name: placeModel.name,
       coordinates: placeModel.coordinates,
       types: placeModel.types,
+      rating: placeModel.rating,
+      vicinity: placeModel.vicinity,
+      photos: placeModel.photos,
     );
   }
 

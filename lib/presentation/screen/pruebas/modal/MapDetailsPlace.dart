@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:huehue/const/data.const.dart';
+import 'package:huehue/enum/StatusRequestEnum.dart';
+import 'package:huehue/presentation/blocs/place/place_bloc.dart';
 import 'package:responsive_grid/responsive_grid.dart';
 
 class MapDetailsPlace extends StatelessWidget {
@@ -36,9 +40,9 @@ class MapDetailsPlace extends StatelessWidget {
               child: SingleChildScrollView(
                 controller: scrollController,
                 child: Padding(
-                   padding: const EdgeInsets.symmetric(
-                          horizontal: 6,
-                        ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                  ),
                   child: ResponsiveGridRow(
                     children: [
                       ResponsiveGridCol(
@@ -54,6 +58,74 @@ class MapDetailsPlace extends StatelessWidget {
                           ),
                         ),
                       ),
+                      ResponsiveGridCol(
+                        child: BlocBuilder<PlaceBloc, PlaceState>(
+                          builder: (context, state) {
+                            if (state.statusRequestPlace ==
+                                StatusRequestEnum.pending) {
+                              return const Center(
+                                child: CircularProgressIndicator.adaptive(),
+                              );
+                            }
+
+                            if (state.nearbyPlaces.isEmpty) {
+                              return const Center(
+                                child: Text('No places found'),
+                              );
+                            }
+
+                            return Column(
+                              children: state.nearbyPlaces.map((element) {
+                                return Card(
+                                  elevation: 4,
+                                  // margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                                  child: ListTile(
+                                    contentPadding: const EdgeInsets.all(10),
+                                    title: Text(
+                                      element.name,
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    subtitle: Text(
+                                      element.vicinity,
+                                      style:
+                                          const TextStyle(color: Colors.grey),
+                                    ),
+                                    // trailing: place['rating'] != null
+                                    //     ? Row(
+                                    //         mainAxisSize: MainAxisSize.min,
+                                    //         children: [
+                                    //           const Icon(Icons.star, color: Colors.amber, size: 20),
+                                    //           Text(place['rating'].toString(),
+                                    //               style: const TextStyle(fontSize: 16)),
+                                    //         ],
+                                    //       )
+                                    //     : null,
+                                    onTap: () {
+                                      // onPlaceSelected(place, position); // Pasa la posición del lugar seleccionado
+                                    },
+                                    leading: element.photos.isNotEmpty
+                                        ? ClipOval(
+                                            child: Image.network(
+                                              'https://maps.googleapis.com/maps/api/place/photo?maxwidth=100&photoreference=${element.photos[0]}&key=${DataConst.googleApiKey}',
+                                              width: 50,
+                                              height: 50,
+                                              fit: BoxFit.cover,
+                                            ),
+                                          )
+                                        : const CircleAvatar(
+                                            backgroundColor: Colors.grey,
+                                            child: Icon(Icons.place, color: Colors.white),
+                                          ),
+                                  ),
+                                );
+                              }).toList(),
+                            );
+                          },
+                        ),
+                      )
                     ],
                   ),
                 ),

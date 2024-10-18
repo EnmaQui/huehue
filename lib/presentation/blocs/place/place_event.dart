@@ -10,8 +10,11 @@ class InitPlaceEvent extends PlaceEvent {
 
 class FilterPlaceByTypeEvent extends PlaceEvent {
   final String type;
+  final LatLng location;
+  
   const FilterPlaceByTypeEvent({
     required this.type,
+    required this.location
   });
 }
 
