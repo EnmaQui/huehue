@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:huehue/const/assent.const.dart';
 
 class MapImageWidget extends StatelessWidget {
   const MapImageWidget({super.key});
@@ -26,7 +27,7 @@ class MapImageWidget extends StatelessWidget {
         ClipRRect(
           borderRadius: BorderRadius.circular(10),
           child: Image.asset(
-            'assets/mapa-nicaragua.png', // Asegúrate de que la ruta sea correcta
+            AsssentConst.mapaNicaragua, // Asegúrate de que la ruta sea correcta
             width: double.infinity, // Ajusta el ancho al 100% del espacio disponible
             fit: BoxFit.contain, // Mantiene la relación de aspecto de la imagen
           ),

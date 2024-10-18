@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:huehue/const/assent.const.dart';
 
 import '../pruebas/widgets/category_slider.dart';
 import '../pruebas/widgets/departments_slider.dart';
@@ -32,7 +33,7 @@ class _PruebasScreenState extends State<PruebasScreen>  with AutomaticKeepAliveC
             titleTextStyle: Theme.of(context).textTheme.headlineSmall,
             flexibleSpace: const FlexibleSpaceBar(
               background: Image(
-                image: AssetImage('assets/catedral.jpg'),
+                image: AssetImage(AsssentConst.catedral),
                 fit: BoxFit.cover,
               ), // Usamos TopImageWidget
             ),

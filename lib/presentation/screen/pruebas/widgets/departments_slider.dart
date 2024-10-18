@@ -3,6 +3,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:huehue/const/assent.const.dart';
 import 'package:huehue/enum/StatusRequestEnum.dart';
 import 'package:huehue/presentation/blocs/place/place_bloc.dart';
 import 'package:huehue/presentation/widgets/list/BaseListWidget.dart';
@@ -99,7 +100,6 @@ class _DepartmentsSliderState extends State<DepartmentsSlider> {
                     itemCount: state.imageUrlsByPlace.length,
                     itemBuilder: (context, index) {
                       final departamento = departamentos[index];
-                      final imageUrl = state.imageUrlsByPlace[index];
                   
                       return GestureDetector(
                         onTap: () {
@@ -119,9 +119,9 @@ class _DepartmentsSliderState extends State<DepartmentsSlider> {
                           decoration: BoxDecoration(
                             // color: sliderColors[widget.colorIndex],
                             borderRadius: BorderRadius.circular(12),
-                            image: DecorationImage(
-                              image: NetworkImage(imageUrl),
-                              fit: BoxFit.cover,
+                            image: const DecorationImage(
+                              image: AssetImage(AsssentConst.fondo),
+                              fit: BoxFit.fill,
                             ),
                           ),
                           child: Stack(
