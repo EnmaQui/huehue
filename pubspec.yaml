@@ -51,7 +51,8 @@ dependencies:
   get_it: 8.0.0
   app_settings: 5.1.1
   iconsax: 0.0.8
-  responsive_grid: ^2.4.4
+  responsive_grid: 2.4.4
+  google_fonts: 6.2.1
 
 dev_dependencies:
   flutter_test:
@@ -72,6 +73,7 @@ flutter:
   assets:
     - assets/mapa-nicaragua.png
     - assets/catedral.jpg
+    - assets/fonts/
     - .env.dev
 
   # The following line ensures that the Material Icons font is
@@ -94,17 +96,15 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  # fonts:
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
-  #       - asset: fonts/Schyler-Italic.ttf
-  #         style: italic
-  #   - family: Trajan Pro
-  #     fonts:
-  #       - asset: fonts/TrajanPro.ttf
-  #       - asset: fonts/TrajanPro_Bold.ttf
-  #         weight: 700
+  fonts:
+    - family: FranklinGothic
+      fonts:
+        - asset: assets/fonts/FRABK.ttf
+    # - family: Trajan Pro
+    #   fonts:
+    #     - asset: fonts/TrajanPro.ttf
+    #     - asset: fonts/TrajanPro_Bold.ttf
+    #       weight: 700
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package

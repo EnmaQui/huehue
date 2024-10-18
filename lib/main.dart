@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:huehue/app.routes.dart';
 import 'package:huehue/presentation/blocs/place/place_bloc.dart';
 import 'package:huehue/presentation/screen/shell/shell_screen.dart';
@@ -67,6 +68,7 @@ class _MyAppState extends State<MyApp> {
                   statusBarIconBrightness: Brightness.dark)),
           applyElevationOverlayColor: false,
           primarySwatch: Colors.blue,
+          fontFamily: 'FranklinGothic',
         ),
         routes: appRoutes,
         initialRoute: ShellScreen.routeName,
