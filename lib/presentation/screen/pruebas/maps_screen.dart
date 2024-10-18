@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
+import 'package:huehue/presentation/screen/pruebas/modal/MapDetailsPlace.dart';
 
 import '../pruebas/widgets_maps/categorias_widget.dart';
 import '../pruebas/widgets_maps/detalles_widget.dart';
@@ -25,6 +26,7 @@ class MapScreen extends StatefulWidget {
   @override
   _MapScreenState createState() => _MapScreenState();
 }
+
 class _MapScreenState extends State<MapScreen> {
   late GoogleMapController mapController;
   List<Polyline> polylines = [];
@@ -36,13 +38,11 @@ class _MapScreenState extends State<MapScreen> {
   double? userLatitude; // Para almacenar la latitud del usuario
   double? userLongitude; // Para almacenar la longitud del usuario
 
-@override
-void initState() {
-  super.initState();
-  _getUserLocation(); // Obtener la ubicación del usuario
-  
-}
-
+  @override
+  void initState() {
+    super.initState();
+    _getUserLocation(); // Obtener la ubicación del usuario
+  }
 
   // Método para obtener la ubicación del usuario
   Future<void> _getUserLocation() async {
@@ -51,7 +51,8 @@ void initState() {
       // Manejar el caso en que el permiso es denegado
       return;
     }
-    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
     setState(() {
       userLatitude = position.latitude;
       userLongitude = position.longitude;
@@ -59,275 +60,247 @@ void initState() {
     fetchNearbyPlaces(); // Llama a la función para obtener lugares cercanos
   }
 
+  Future<void> fetchNearbyPlaces() async {
+    const String apiKey = 'AIzaSyCNNLly_rF6NkMMgoFAl5dv8lfCmu00mnY';
+    final String type = _getTypeFromCategory(
+        selectedCategory); // Función para obtener el tipo correcto
+    final double latitude = widget.latitude;
+    final double longitude = widget.longitude;
 
+    final url = Uri.parse(
+      'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=$latitude,$longitude&radius=1500&type=$type&key=$apiKey',
+    );
 
+    try {
+      final response = await http.get(url);
 
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
 
-
-
-
-Future<void> fetchNearbyPlaces() async {
-  const String apiKey = 'AIzaSyCNNLly_rF6NkMMgoFAl5dv8lfCmu00mnY';
-  final String type = _getTypeFromCategory(selectedCategory); // Función para obtener el tipo correcto
-  final double latitude = widget.latitude;
-  final double longitude = widget.longitude;
-
-  final url = Uri.parse(
-    'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=$latitude,$longitude&radius=1500&type=$type&key=$apiKey',
-  );
-
-  try {
-    final response = await http.get(url);
-
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-
-      setState(() {
-        places = data['results'];
-        isLoadingPlaces = false;
-      });
-    } else {
-      throw Exception('Error al obtener lugares cercanos');
-    }
-  } catch (error) {
-    setState(() {
-      isLoadingPlaces = false;
-    });
-    print('Error en fetchNearbyPlaces: $error');
-  }
-}
-
-String _getTypeFromCategory(String category) {
-  switch (category) {
-    case 'Iglesias':
-      return 'church'; // Tipo correspondiente a Iglesias
-    case 'Restaurantes':
-      return 'restaurant'; // Tipo correspondiente a Restaurantes
-    case 'Monumentos':
-      return 'museum'; // Tipo correspondiente a Monumentos
-    case 'Edificios históricos':
-      return 'point_of_interest'; // Tipo para Edificios históricos
-    case 'Playas':
-      return 'beach'; // Tipo para Playas
-    case 'Reservas Naturales':
-      return 'natural_feature'; // Tipo para Reservas Naturales
-    case 'Parques':
-      return 'park'; // Tipo para Parques
-    case 'Tiendas de conveniencia':
-      return 'convenience_store'; // Tipo para Tiendas de conveniencia
-    case 'Centros comerciales':
-      return 'shopping_mall'; // Tipo para Centros comerciales
-    case 'Volcanes':
-      return 'geological_feature'; // Tipo para Volcanes
-    case 'Montañas':
-      return 'mountain'; // Tipo para Montañas
-    case 'Islas':
-      return 'island'; // Tipo para Islas
-    default:
-      return 'establishment'; // Valor por defecto si no coincide con ninguna categoría
-  }
-}
-
-
-Future<void> _onPlaceSelected(dynamic place, Object? position) async {
-  const String apiKey = 'AIzaSyCNNLly_rF6NkMMgoFAl5dv8lfCmu00mnY'; // Asegúrate de usar tu API Key
-  final String placeId = place['place_id'];
-
-  final url = Uri.parse(
-    'https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&key=$apiKey',
-  );
-
-  try {
-    final response = await http.get(url);
-
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-
-      if (data['result'] != null) { // Verificar si se encontraron detalles
         setState(() {
-          // Actualizar los detalles del lugar seleccionado
-          selectedPlace = {
-            'name': data['result']['name'],
-            'rating': data['result']['rating'],
-            'opening_hours': data['result']['opening_hours'],
-            'photos': data['result']['photos']?.map((photo) {
-              return 'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photo['photo_reference']}&key=$apiKey';
-            }).toList() ?? [],
-          };
-
-          // Limpiar los marcadores anteriores
-          markers.clear();
-
-          // Agregar el nuevo marcador
-          markers.add(
-            Marker(
-              markerId: MarkerId(placeId),
-              position: LatLng(
-                place['geometry']['location']['lat'],
-                place['geometry']['location']['lng'],
-              ),
-              infoWindow: InfoWindow(title: place['name']),
-            ),
-          );
-
-          // Limpiar las polilíneas existentes
-          polylines.clear();
-
-          // Crear una nueva polilínea desde la ubicación del usuario al lugar seleccionado
-          if (userLatitude != null && userLongitude != null) {
-            polylines.add(
-              Polyline(
-                polylineId: const PolylineId('route'), // Un ID único para la polilínea
-                points: [
-                  LatLng(userLatitude!, userLongitude!), // Punto de inicio (ubicación del usuario)
-                  LatLng(
-                    place['geometry']['location']['lat'],
-                    place['geometry']['location']['lng'],
-                  ), // Punto de destino (lugar seleccionado)
-                ],
-                color: Colors.blue, // Color de la polilínea
-                width: 5, // Ancho de la polilínea
-              ),
-            );
-          }
-
-          // Centrar el mapa en el lugar seleccionado
-          mapController.animateCamera(
-            CameraUpdate.newLatLng(
-              LatLng(
-                place['geometry']['location']['lat'],
-                place['geometry']['location']['lng'],
-              ),
-            ),
-          );
-
-          // Mostrar los detalles del lugar
-          _showPlaceDetails();
+          places = data['results'];
+          isLoadingPlaces = false;
         });
       } else {
-        throw Exception('No se encontraron detalles para el lugar seleccionado');
+        throw Exception('Error al obtener lugares cercanos');
       }
-    } else {
-      throw Exception('Error al obtener detalles del lugar');
+    } catch (error) {
+      setState(() {
+        isLoadingPlaces = false;
+      });
+      print('Error en fetchNearbyPlaces: $error');
     }
-  } catch (error) {
-    print('Error en _onPlaceSelected: $error');
-    // Aquí puedes mostrar un mensaje al usuario
-  }
-}
-
-void _showPlaceDetails() {
-  if (selectedPlace == null) {
-    // Manejo de error si selectedPlace es null
-    print('selectedPlace es null');
-    return; // O puedes mostrar un mensaje de error al usuario
   }
 
-  showModalBottomSheet(
-    context: context,
-    builder: (context) {
-      return PlaceDetailsWidget(
-        name: selectedPlace['name'] ?? 'Nombre no disponible', // Valor por defecto
-        rating: (selectedPlace['rating'] is int)
-            ? (selectedPlace['rating'] as int).toDouble()
-            : (selectedPlace['rating'] ?? 0.0), // Valor por defecto
+  String _getTypeFromCategory(String category) {
+    switch (category) {
+      case 'Iglesias':
+        return 'church'; // Tipo correspondiente a Iglesias
+      case 'Restaurantes':
+        return 'restaurant'; // Tipo correspondiente a Restaurantes
+      case 'Monumentos':
+        return 'museum'; // Tipo correspondiente a Monumentos
+      case 'Edificios históricos':
+        return 'point_of_interest'; // Tipo para Edificios históricos
+      case 'Playas':
+        return 'beach'; // Tipo para Playas
+      case 'Reservas Naturales':
+        return 'natural_feature'; // Tipo para Reservas Naturales
+      case 'Parques':
+        return 'park'; // Tipo para Parques
+      case 'Tiendas de conveniencia':
+        return 'convenience_store'; // Tipo para Tiendas de conveniencia
+      case 'Centros comerciales':
+        return 'shopping_mall'; // Tipo para Centros comerciales
+      case 'Volcanes':
+        return 'geological_feature'; // Tipo para Volcanes
+      case 'Montañas':
+        return 'mountain'; // Tipo para Montañas
+      case 'Islas':
+        return 'island'; // Tipo para Islas
+      default:
+        return 'establishment'; // Valor por defecto si no coincide con ninguna categoría
+    }
+  }
 
-        openNow: selectedPlace['opening_hours'] != null && 
-                 selectedPlace['opening_hours']['open_now'] != null 
-            ? selectedPlace['opening_hours']['open_now'] 
-            : false, // Manejo de null
+  Future<void> _onPlaceSelected(dynamic place, Object? position) async {
+    const String apiKey =
+        'AIzaSyCNNLly_rF6NkMMgoFAl5dv8lfCmu00mnY'; // Asegúrate de usar tu API Key
+    final String placeId = place['place_id'];
 
-        photos: (selectedPlace['photos'] != null)
-            ? (selectedPlace['photos'] as List<dynamic>).cast<String>()
-            : <String>[],
+    final url = Uri.parse(
+      'https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&key=$apiKey',
+    );
 
-        reviews: (selectedPlace['reviews'] != null && selectedPlace['reviews'] is List)
-            ? (selectedPlace['reviews'] as List<dynamic>).cast<String>()
-            : <String>[], // Inicializa como lista vacía de strings
+    try {
+      final response = await http.get(url);
 
-        openingHours: selectedPlace['opening_hours'] ?? {}, // Nueva adición
-      );
-    },
-  );
-}
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
 
+        if (data['result'] != null) {
+          // Verificar si se encontraron detalles
+          setState(() {
+            // Actualizar los detalles del lugar seleccionado
+            selectedPlace = {
+              'name': data['result']['name'],
+              'rating': data['result']['rating'],
+              'opening_hours': data['result']['opening_hours'],
+              'photos': data['result']['photos']?.map((photo) {
+                    return 'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photo['photo_reference']}&key=$apiKey';
+                  }).toList() ??
+                  [],
+            };
 
+            // Limpiar los marcadores anteriores
+            markers.clear();
 
+            // Agregar el nuevo marcador
+            markers.add(
+              Marker(
+                markerId: MarkerId(placeId),
+                position: LatLng(
+                  place['geometry']['location']['lat'],
+                  place['geometry']['location']['lng'],
+                ),
+                infoWindow: InfoWindow(title: place['name']),
+              ),
+            );
 
+            // Limpiar las polilíneas existentes
+            polylines.clear();
 
+            // Crear una nueva polilínea desde la ubicación del usuario al lugar seleccionado
+            if (userLatitude != null && userLongitude != null) {
+              polylines.add(
+                Polyline(
+                  polylineId: const PolylineId(
+                      'route'), // Un ID único para la polilínea
+                  points: [
+                    LatLng(userLatitude!,
+                        userLongitude!), // Punto de inicio (ubicación del usuario)
+                    LatLng(
+                      place['geometry']['location']['lat'],
+                      place['geometry']['location']['lng'],
+                    ), // Punto de destino (lugar seleccionado)
+                  ],
+                  color: Colors.blue, // Color de la polilínea
+                  width: 5, // Ancho de la polilínea
+                ),
+              );
+            }
 
-@override
-Widget build(BuildContext context) {
-  return Scaffold(
-    appBar: AppBar(
-      title: const Text('Ubicación en el Mapa'),
-    ),
-    body: Column(
-      children: [
-        // Mapa
-        SizedBox(
-          height: MediaQuery.of(context).size.height * 0.4,
-          child: MapWidget(
-            latitude: userLatitude ?? 0.0, // Usa la latitud del usuario
-            longitude: userLongitude ?? 0.0, // Usa la longitud del usuario
-            markers: markers,
-            onMapCreated: (controller) {
-              mapController = controller;
-              // Centrar el mapa en la ubicación del usuario
-                controller.animateCamera(
-                  CameraUpdate.newLatLng(
-                    LatLng(widget.latitude, widget.longitude),
-                  ),
-                );
-            },
-            // Ahora este método se llama cuando se selecciona un lugar
-            onPlaceSelected: (LatLng position) {
-              // Actualiza la ruta en el mapa con la nueva posición
-              mapController.animateCamera(CameraUpdate.newLatLng(position));
-              // Aquí puedes agregar cualquier lógica adicional que necesites
+            // Centrar el mapa en el lugar seleccionado
+            mapController.animateCamera(
+              CameraUpdate.newLatLng(
+                LatLng(
+                  place['geometry']['location']['lat'],
+                  place['geometry']['location']['lng'],
+                ),
+              ),
+            );
+
+            // Mostrar los detalles del lugar
+            _showPlaceDetails();
+          });
+        } else {
+          throw Exception(
+              'No se encontraron detalles para el lugar seleccionado');
+        }
+      } else {
+        throw Exception('Error al obtener detalles del lugar');
+      }
+    } catch (error) {
+      print('Error en _onPlaceSelected: $error');
+      // Aquí puedes mostrar un mensaje al usuario
+    }
+  }
+
+  void _showPlaceDetails() {
+    if (selectedPlace == null) {
+      // Manejo de error si selectedPlace es null
+      print('selectedPlace es null');
+      return; // O puedes mostrar un mensaje de error al usuario
+    }
+
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return PlaceDetailsWidget(
+          name: selectedPlace['name'] ??
+              'Nombre no disponible', // Valor por defecto
+          rating: (selectedPlace['rating'] is int)
+              ? (selectedPlace['rating'] as int).toDouble()
+              : (selectedPlace['rating'] ?? 0.0), // Valor por defecto
+
+          openNow: selectedPlace['opening_hours'] != null &&
+                  selectedPlace['opening_hours']['open_now'] != null
+              ? selectedPlace['opening_hours']['open_now']
+              : false, // Manejo de null
+
+          photos: (selectedPlace['photos'] != null)
+              ? (selectedPlace['photos'] as List<dynamic>).cast<String>()
+              : <String>[],
+
+          reviews: (selectedPlace['reviews'] != null &&
+                  selectedPlace['reviews'] is List)
+              ? (selectedPlace['reviews'] as List<dynamic>).cast<String>()
+              : <String>[], // Inicializa como lista vacía de strings
+
+          openingHours: selectedPlace['opening_hours'] ?? {}, // Nueva adición
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      // appBar: AppBar(
+      //   title: const Text('Ubicación en el Mapa'),
+      // ),
+      body: Stack(children: [
+        Positioned.fill(
+          child: GoogleMap(
+            // mapType: state.mapType,
+            initialCameraPosition: CameraPosition(
+              target: LatLng(widget.latitude, widget.longitude),
+              zoom: 15,
+            ),
+            // markers: state.pulperiasByRadius
+            //     .map(
+            //       (element) => Marker(
+            //         markerId: MarkerId('pulperia_${element.id}'),
+            //         position: element.coordinates ?? const LatLng(0, 0),
+            //         icon: MapUtils.getMapIconByOwnerId(element.ownerId ?? 0),
+            //         infoWindow: InfoWindow(
+            //           title: element.name,
+            //         ),
+            //         onTap: () {
+            //           context
+            //               .read<PulperiaBloc>()
+            //               .add(GetPolylinePointEvent(pulperia: element));
+            //         },
+            //       ),
+            //     )
+            //     .toSet(),
+            // polylines: state.polylines ?? {},
+            zoomControlsEnabled: false,
+            myLocationButtonEnabled: false,
+            compassEnabled: false,
+            myLocationEnabled: true,
+            mapToolbarEnabled: false,
+            tiltGesturesEnabled: false,
+            // style: MapConfig.whiteMap,
+            onMapCreated: (controller) async {
+              // _mapController = controller;
+              // await Future.delayed(const Duration(seconds: 2));
+              // goToMyPosition();
             },
           ),
         ),
-        // Categorías
-        CategorySelectorWidget(
-          categories: const [
-            'Iglesias',
-            'Restaurantes',
-            'Monumentos',
-            'Edificios históricos',
-            'Playas',
-            'Reservas Naturales',
-            'Parques',
-            'Tiendas de conveniencia',
-            'Centros comerciales',
-            'Volcanes',
-            'Montañas',
-            'Islas',
-          ],
-          selectedCategory: selectedCategory,
-          onCategoryChanged: (category) {
-            setState(() {
-              selectedCategory = category;
-              isLoadingPlaces = true;
-            });
-            fetchNearbyPlaces();
-          },
-        ),
-        // Lista de Lugares
-        isLoadingPlaces
-            ? const Center(child: CircularProgressIndicator())
-            : Expanded(
-                child: PlaceListWidget(
-                  places: places,
-                  onPlaceSelected: (place, position) {
-                    _onPlaceSelected(place, position);
-                    
-                  },
-                ),
-              ),
-      ],
-    ),
-  );
-}
-
+        const MapDetailsPlace(),
+      ]),
+    );
+  }
 }
