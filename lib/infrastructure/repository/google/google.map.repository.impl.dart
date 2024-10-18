@@ -1,4 +1,5 @@
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:huehue/const/data.const.dart';
 import 'package:huehue/domain/datasource/google/google.map.datasource.dart';
 import 'package:huehue/domain/entity/place/PlaceDetailEntity.dart';
 import 'package:huehue/domain/entity/place/PlaceEntity.dart';
@@ -53,5 +54,20 @@ class GoogleMapRepositoryImpl extends GoogleMapRepository {
     }
 
     return null;
+  }
+  
+  @override
+  Future<List<String>> fetchImageUrls(List<String> placeIds) async {
+    try {
+      List<String> photos = [];
+      for(final placeId in placeIds) {
+        final reponsePlace = await googleMapDataSource.getPlaceRatings(placeId);
+        // final photo = await googleMapDataSource.getPlacePhotoByReference(reponsePlace.photos?[5] ?? '');
+        photos.add('${DataConst.googleMapApi}/place/photo?maxwidth=1280&maxheight=720&photoreference=${reponsePlace.photos?[5]}&key=${DataConst.googleApiKey}');
+      }
+      return photos;
+    } catch (e) {
+      rethrow;
+    }
   }
 }

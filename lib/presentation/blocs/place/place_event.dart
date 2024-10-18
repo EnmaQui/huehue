@@ -21,3 +21,12 @@ class GetPlaceDetailEvent extends PlaceEvent {
     required this.place,
   });
 }
+
+class GetPlaceRating extends PlaceEvent {
+  final List<String> placeIds;
+
+
+  const GetPlaceRating({
+    required this.placeIds
+  });
+}

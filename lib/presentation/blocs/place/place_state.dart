@@ -12,6 +12,9 @@ class PlaceState extends Equatable {
   final Position? userLocation;
   final bool isPermissionLocationGranted;
   final List<PlaceEntity> nearbyPlaces;
+
+  final List<String> imageUrlsByPlace;
+  final StatusRequestEnum statusRequestImageUrlsByPlace;
   
   const PlaceState({
     this.statusRequestPlace = StatusRequestEnum.idle,
@@ -21,7 +24,9 @@ class PlaceState extends Equatable {
     this.nearbyPlaces = const [],
     this.placeSelected,
     this.placeDetail,
-    this.statusRequestPlaceDetail = StatusRequestEnum.idle
+    this.statusRequestPlaceDetail = StatusRequestEnum.idle,
+    this.imageUrlsByPlace = const [],
+    this.statusRequestImageUrlsByPlace = StatusRequestEnum.idle
   });
 
   PlaceState copyWith({
@@ -32,7 +37,9 @@ class PlaceState extends Equatable {
     List<PlaceEntity>? nearbyPlaces,
     PlaceEntity? placeSelected,
     PlaceDetailEntity? placeDetail,
-    StatusRequestEnum? statusRequestPlaceDetail
+    StatusRequestEnum? statusRequestPlaceDetail,
+    List<String>? imageUrlsByPlace,
+    StatusRequestEnum? statusRequestImageUrlsByPlace
   }) {
     return PlaceState(
       statusRequestPlace: statusRequestPlace ?? this.statusRequestPlace,
@@ -42,7 +49,9 @@ class PlaceState extends Equatable {
       nearbyPlaces: nearbyPlaces ?? this.nearbyPlaces,
       placeSelected: placeSelected ?? this.placeSelected,
       placeDetail: placeDetail ?? this.placeDetail,
-      statusRequestPlaceDetail: statusRequestPlaceDetail ?? this.statusRequestPlaceDetail
+      statusRequestPlaceDetail: statusRequestPlaceDetail ?? this.statusRequestPlaceDetail,
+      imageUrlsByPlace: imageUrlsByPlace ?? this.imageUrlsByPlace,
+      statusRequestImageUrlsByPlace: statusRequestImageUrlsByPlace ?? this.statusRequestImageUrlsByPlace
     );
   }
 
@@ -53,6 +62,8 @@ class PlaceState extends Equatable {
     isPermissionLocationGranted,
     statusRequestLocation,
     nearbyPlaces,
-    statusRequestPlaceDetail
+    statusRequestPlaceDetail,
+    imageUrlsByPlace,
+    statusRequestImageUrlsByPlace
   ];
 }

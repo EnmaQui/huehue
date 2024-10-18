@@ -1,9 +1,10 @@
 // ignore_for_file: library_private_types_in_public_api
 
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:huehue/enum/StatusRequestEnum.dart';
+import 'package:huehue/presentation/blocs/place/place_bloc.dart';
 import 'package:huehue/presentation/widgets/list/BaseListWidget.dart';
 
 import '../departments_details_screen.dart'; // Importamos la nueva vista
@@ -37,44 +38,16 @@ class _DepartmentsSliderState extends State<DepartmentsSlider> {
     {'name': 'RAAN', 'placeId': 'ChIJ828chdnkEI8RfB3WTR7D8Do'},
     {'name': 'RAAS', 'placeId': 'ChIJ6chW8QYIDI8RpB4DOlSmD1k'},
   ];
-  
-    late Future<List<String>> _imageUrls;
-
-Future<List<String>> fetchImageUrls() async {
-    List<String> imageUrls = [];
-    
-    for (var departamento in departamentos) {
-      final response = await http.get(Uri.parse(
-          'https://maps.googleapis.com/maps/api/place/details/json?fields=name,rating,photos&place_id=${departamento['placeId']}&key=AIzaSyCNNLly_rF6NkMMgoFAl5dv8lfCmu00mnY'));
-
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        if (data['result'] != null && data['result']['photos'] != null && data['result']['photos'].isNotEmpty) {
-          // Solo añade la URL de la primera foto (si existe)
-          String photoReference = data['result']['photos'][5]['photo_reference'];
-          String imageUrl =
-    'https://maps.googleapis.com/maps/api/place/photo?maxwidth=1280&maxheight=720&photoreference=$photoReference&key=AIzaSyCNNLly_rF6NkMMgoFAl5dv8lfCmu00mnY';
-          imageUrls.add(imageUrl);
-        } else {
-          // Añadir una URL por defecto o manejar el caso sin fotos
-          imageUrls.add('https://via.placeholder.com/1280'); // URL de imagen de placeholder
-        }
-      } else {
-        // Manejo de error, agregar una URL por defecto
-        imageUrls.add('https://via.placeholder.com/1280');
-      }
-    }
-    
-    return imageUrls;
-  }
-  // El método fetchImageUrls sigue igual...
 
   @override
   void initState() {
-    super.initState();
-    _imageUrls = fetchImageUrls();
-  }
+    final placeBloc = context.read<PlaceBloc>();
 
+    placeBloc.add(GetPlaceRating(placeIds: departamentos.map((e) => e['placeId'] as String).toList()));
+
+    super.initState();
+  }
+  
   @override
   Widget build(BuildContext context) {
         final List<Color> sliderColors = [
@@ -102,25 +75,31 @@ Future<List<String>> fetchImageUrls() async {
         ),
         SizedBox(
           height: 177,
-          child: FutureBuilder<List<String>>(
-            future: _imageUrls,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              } else if (snapshot.hasError) {
-                return const Center(child: Text('Error al cargar imágenes'));
-              } else {
-                return SizedBox(
+          child: BlocBuilder<PlaceBloc, PlaceState>(
+            builder: (context, state) {
+              if(state.statusRequestImageUrlsByPlace == StatusRequestEnum.pending) {
+                return const Center(child: CircularProgressIndicator.adaptive());
+              }
+
+              if(state.imageUrlsByPlace.isEmpty) {
+                return const Text('No hay imagenes');
+              }
+
+              // if(state.statusRequestImageUrlsByPlace == StatusRequestEnum.error) {
+              //   return const Text('Error');
+              // }
+
+              return SizedBox(
                   child: BaseListWidget(
                     padding: const EdgeInsets.symmetric(
                       vertical: 8,
                       horizontal: 12,
                     ),
                     scrollDirection: Axis.horizontal,
-                    itemCount: departamentos.length,
+                    itemCount: state.imageUrlsByPlace.length,
                     itemBuilder: (context, index) {
                       final departamento = departamentos[index];
-                      final imageUrl = snapshot.data![index];
+                      final imageUrl = state.imageUrlsByPlace[index];
                   
                       return GestureDetector(
                         onTap: () {
@@ -169,7 +148,6 @@ Future<List<String>> fetchImageUrls() async {
                     },
                   ),
                 );
-              }
             },
           ),
         ),

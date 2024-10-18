@@ -20,6 +20,26 @@ class PlaceBloc extends Bloc<PlaceEvent, PlaceState> {
     on<InitPlaceEvent>(_initPlace);
     on<FilterPlaceByTypeEvent>(_filterPlaceByType);
     on<GetPlaceDetailEvent>(_getPlaceDetail);
+    on<GetPlaceRating>(_getPlaceRating);
+  }
+
+  Future<void> _getPlaceRating(
+    GetPlaceRating event,
+    Emitter<PlaceState> emit,
+  ) async {
+    try {
+      emit(state.copyWith(statusRequestImageUrlsByPlace: StatusRequestEnum.pending));
+
+      final reponse = await googleMapRepository.fetchImageUrls(event.placeIds);
+
+      emit(state.copyWith(
+        statusRequestImageUrlsByPlace: StatusRequestEnum.success,
+        imageUrlsByPlace: reponse
+      ));
+
+    } catch (e) {
+      emit(state.copyWith(statusRequestImageUrlsByPlace: StatusRequestEnum.error));
+    }
   }
 
   Future<void> _getPlaceDetail(

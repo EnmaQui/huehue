@@ -5,6 +5,7 @@ import 'package:huehue/domain/datasource/google/google.map.datasource.dart';
 import 'package:huehue/infrastructure/models/DirectionsModel.dart';
 import 'package:huehue/infrastructure/models/Place/PlaceDetailModel.dart';
 import 'package:huehue/infrastructure/models/Place/PlaceModel.dart';
+import 'package:huehue/infrastructure/models/Place/PlaceMoreRaitingModel.dart';
 import 'package:huehue/infrastructure/models/Place/PlaceReviewerModel.dart';
 import 'package:huehue/utils/service.locator.utils.dart';
 
@@ -66,7 +67,7 @@ class GoogleMapDataSourceImpl extends GoogleMapDataSource {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return (List<String>.from(
           response.data['result']['photos'].map((photo) =>
-              'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photo['photo_reference']}&key=${DataConst.googleApiKey}'),
+              '/place/photo?maxwidth=400&photoreference=${photo['photo_reference']}&key=${DataConst.googleApiKey}'),
         ));
       }
 
@@ -89,6 +90,42 @@ class GoogleMapDataSourceImpl extends GoogleMapDataSource {
       }
 
       return [];
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<String> getPlacePhotoByReference(String photoReference) async {
+    try {
+      final response = await _dio.get(
+        '/place/photo?maxwidth=1280&maxheight=720&photoreference=$photoReference&key=${DataConst.googleApiKey}',
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return response.data;
+      }
+
+      throw Exception('Failed to load place photo');
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<PlaceMoreRaitingModel> getPlaceRatings(String placeId) async {
+    try {
+      final reponse = await _dio.get(
+        '/place/details/json?fields=name,rating,photos&place_id=$placeId&key=${DataConst.googleApiKey}',
+      );
+
+      print(reponse);
+
+      if (reponse.statusCode == 200 || reponse.statusCode == 201) {
+        return PlaceMoreRaitingModel.fromJson(reponse.data['result']);
+      }
+
+      throw Exception('Failed to load place photo');
     } catch (e) {
       rethrow;
     }
