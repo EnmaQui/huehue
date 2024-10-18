@@ -21,7 +21,16 @@ class PlaceBloc extends Bloc<PlaceEvent, PlaceState> {
     on<FilterPlaceByTypeEvent>(_filterPlaceByType);
     on<GetPlaceDetailEvent>(_getPlaceDetail);
     on<GetPlaceRating>(_getPlaceRating);
+    on<SetSelectedCategory>(_setSelectedCategory);
   }
+
+  void _setSelectedCategory(
+    SetSelectedCategory event,
+    Emitter<PlaceState> emit,
+  ) {
+    emit(state.copyWith(selectedCategory: event.category));
+  }
+
 
   Future<void> _getPlaceRating(
     GetPlaceRating event,

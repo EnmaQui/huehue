@@ -30,3 +30,10 @@ class GetPlaceRating extends PlaceEvent {
     required this.placeIds
   });
 }
+
+class SetSelectedCategory extends PlaceEvent {
+  final String category;
+  const SetSelectedCategory({
+    required this.category
+  });
+}

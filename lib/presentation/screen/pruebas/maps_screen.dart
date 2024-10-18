@@ -1,9 +1,11 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
+import 'package:huehue/presentation/blocs/place/place_bloc.dart';
 import 'package:huehue/presentation/screen/pruebas/modal/MapDetailsPlace.dart';
 
 import '../pruebas/widgets_maps/categorias_widget.dart';
@@ -42,6 +44,12 @@ class _MapScreenState extends State<MapScreen> {
   void initState() {
     super.initState();
     _getUserLocation(); // Obtener la ubicación del usuario
+  }
+
+  @override
+  void dispose() {
+    mapController.dispose();
+    super.dispose();
   }
 
   // Método para obtener la ubicación del usuario
@@ -255,6 +263,8 @@ class _MapScreenState extends State<MapScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final placeBloc = context.read<PlaceBloc>();
     return Scaffold(
       // appBar: AppBar(
       //   title: const Text('Ubicación en el Mapa'),
@@ -294,9 +304,51 @@ class _MapScreenState extends State<MapScreen> {
             // style: MapConfig.whiteMap,
             onMapCreated: (controller) async {
               // _mapController = controller;
+              mapController = controller;
+              controller.animateCamera(
+                CameraUpdate.newLatLng(
+                  LatLng(widget.latitude, widget.longitude),
+                ),
+              );
               // await Future.delayed(const Duration(seconds: 2));
               // goToMyPosition();
             },
+          ),
+        ),
+        Positioned(
+          top: 40,
+          child: SizedBox(
+            width: size.width,
+            height: size.height * 0.07,
+            child: BlocBuilder<PlaceBloc, PlaceState>(
+              builder: (context, state) {
+                return CategorySelectorWidget(
+                  categories: const [
+                    'Iglesias',
+                    'Restaurantes',
+                    'Monumentos',
+                    'Edificios históricos',
+                    'Playas',
+                    'Reservas Naturales',
+                    'Parques',
+                    'Tiendas de conveniencia',
+                    'Centros comerciales',
+                    'Volcanes',
+                    'Montañas',
+                    'Islas',
+                  ],
+                  selectedCategory: state.selectedCategory,
+                  onCategoryChanged: (category) {
+                    placeBloc.add(SetSelectedCategory(category: category));
+                    // setState(() {
+                    //   selectedCategory = category;
+                    //   isLoadingPlaces = true;
+                    // });
+                    // fetchNearbyPlaces();
+                  },
+                );
+              },
+            ),
           ),
         ),
         const MapDetailsPlace(),
