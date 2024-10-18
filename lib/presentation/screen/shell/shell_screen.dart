@@ -31,15 +31,15 @@ class _ShellScreenState extends State<ShellScreen> {
         ],
       ),
       extendBody: true,
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        child: const Center(
-          child: Icon(
-            Iconsax.calculator,
-          ),
-        ),
-      ),
+      // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () {},
+      //   child: const Center(
+      //     child: Icon(
+      //       Iconsax.calculator,
+      //     ),
+      //   ),
+      // ),
       bottomNavigationBar: SafeArea(
         child: Container(
           padding: const EdgeInsets.all(12),
@@ -83,7 +83,7 @@ class _ShellScreenState extends State<ShellScreen> {
                       color: const Color.fromARGB(0, 236, 94, 94),
                       height: 36,
                       child:
-                          const Icon(Iconsax.map, color: Colors.white),
+                          const Icon(Iconsax.calculator, color: Colors.white),
                     ),
                   ),
                 ],

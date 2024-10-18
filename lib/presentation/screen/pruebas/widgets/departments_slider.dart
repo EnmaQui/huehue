@@ -130,14 +130,20 @@ class _DepartmentsSliderState extends State<DepartmentsSlider> {
                                 aspectRatio: 16 / 9, 
                               ),
                               Positioned(
-                                bottom: 8,
-                                right: 8,
-                                child: Container(
-                                  padding: const EdgeInsets.all(4.0),
-                                  color: Colors.black54,
-                                  child: Text(
-                                    departamento['name']!,
-                                    style: const TextStyle(color: Colors.white),
+                                right: 0,
+                                top: 0,
+                                bottom: 0,
+                                left: 0,
+                                child: SizedBox(
+                                  child: Center(
+                                    child: Text(
+                                      departamento['name']!,
+                                      textAlign: TextAlign.center,
+                                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      )
+                                    ),
                                   ),
                                 ),
                               ),
