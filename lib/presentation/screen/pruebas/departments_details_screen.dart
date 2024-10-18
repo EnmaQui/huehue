@@ -58,26 +58,47 @@ class _PlaceDetailsScreenState extends State<PlaceDetailsScreen> {
           ? const Center(child: CircularProgressIndicator())
           : placeDetails != null
               ? ListView(
-                  padding: const EdgeInsets.all(16),
+                  // padding: const EdgeInsets.all(16),
                   children: [
                     if (placeDetails!['name'] != null)
-                      PlaceName(name: placeDetails!['name']),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          left: 12,
+                        ),
+                        child: PlaceName(name: placeDetails!['name']),
+                      ),
                     const SizedBox(height: 10),
 
                     if (placeDetails!['formatted_address'] != null)
-                      PlaceAddress(address: placeDetails!['formatted_address']),
+                      Padding(
+ padding: const EdgeInsets.only(
+                          left: 12,
+                        ),                        child: PlaceAddress(address: placeDetails!['formatted_address']),
+                      ),
                     const SizedBox(height: 10),
 
                     if (placeDetails!['formatted_phone_number'] != null)
-                      PlacePhoneNumber(phoneNumber: placeDetails!['formatted_phone_number']),
+                      Padding(
+ padding: const EdgeInsets.only(
+                          left: 12,
+                        ),                        child: PlacePhoneNumber(phoneNumber: placeDetails!['formatted_phone_number']),
+                      ),
                     const SizedBox(height: 10),
 
                     if (placeDetails!['website'] != null)
-                      PlaceWebsite(website: placeDetails!['website']),
+                      Padding(
+ padding: const EdgeInsets.only(
+                          left: 12,
+                        ),                        child: PlaceWebsite(website: placeDetails!['website']),
+                      ),
                     const SizedBox(height: 10),
 
                     if (placeDetails!['business_status'] != null)
-                      BusinessStatus(status: placeDetails!['business_status']),
+                      Padding(
+ padding: const EdgeInsets.only(
+                          left: 12,
+                        ),                        child: BusinessStatus(status: placeDetails!['business_status']),
+                      ),
                     const SizedBox(height: 20),
 
                     if (placeDetails!['photos'] != null && placeDetails!['photos'].isNotEmpty)
@@ -85,7 +106,11 @@ class _PlaceDetailsScreenState extends State<PlaceDetailsScreen> {
                     const SizedBox(height: 20),
 
                     if (placeDetails!['geometry'] != null)
-                      PlaceGeometry(location: placeDetails!['geometry']['location']),
+                      Padding(
+ padding: const EdgeInsets.only(
+                          left: 12,
+                        ),                        child: PlaceGeometry(location: placeDetails!['geometry']['location']),
+                      ),
                     const SizedBox(height: 20),
 
                   // Botón para ver ubicación en el mapa

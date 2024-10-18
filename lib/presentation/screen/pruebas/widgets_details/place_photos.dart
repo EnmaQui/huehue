@@ -13,9 +13,14 @@ class PlacePhotos extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          "Galería de fotos",
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        const Padding(
+          padding: EdgeInsets.only(
+            left: 12,
+          ),
+          child: Text(
+            "Galería de fotos",
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
         ),
         const SizedBox(height: 10),
 
@@ -30,9 +35,11 @@ class PlacePhotos extends StatelessWidget {
             viewportFraction: 0.8,
             autoPlayInterval: const Duration(seconds: 3),
           ),
-          itemCount: photos.length > 20 ? 20 : photos.length, // Limita a 20 fotos
+          itemCount:
+              photos.length > 20 ? 20 : photos.length, // Limita a 20 fotos
           itemBuilder: (BuildContext context, int index, int realIndex) {
-            String imageUrl = 'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photos[index]['photo_reference']}&key=AIzaSyCNNLly_rF6NkMMgoFAl5dv8lfCmu00mnY';
+            String imageUrl =
+                'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photos[index]['photo_reference']}&key=AIzaSyCNNLly_rF6NkMMgoFAl5dv8lfCmu00mnY';
 
             return GestureDetector(
               onTap: () {
@@ -56,7 +63,8 @@ class PlacePhotos extends StatelessWidget {
                         offset: Offset(0, 4), // Sombra debajo de la imagen
                       ),
                     ],
-                    borderRadius: BorderRadius.circular(15), // Bordes redondeados
+                    borderRadius:
+                        BorderRadius.circular(15), // Bordes redondeados
                     image: DecorationImage(
                       image: NetworkImage(imageUrl),
                       fit: BoxFit.cover,

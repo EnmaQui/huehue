@@ -5,11 +5,19 @@ import '../pruebas/widgets/departments_slider.dart';
 import '../pruebas/widgets/image_list.dart';
 import '../pruebas/widgets/top_image_widget.dart'; // Importamos los widgets
 
-class PruebasScreen extends StatelessWidget {
+class PruebasScreen extends StatefulWidget  {
   const PruebasScreen({super.key});
 
   @override
+  State<PruebasScreen> createState() => _PruebasScreenState();
+}
+
+class _PruebasScreenState extends State<PruebasScreen>  with AutomaticKeepAliveClientMixin {
+  @override
   Widget build(BuildContext context) {
+    
+    super.build(context);
+
     return Scaffold(
       body: CustomScrollView(
         slivers: [
@@ -60,4 +68,7 @@ class PruebasScreen extends StatelessWidget {
       ),
     );
   }
+  
+  @override
+  bool get wantKeepAlive => true;
 }
