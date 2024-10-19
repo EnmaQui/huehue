@@ -5,6 +5,7 @@ import 'package:huehue/const/data.const.dart';
 import 'package:huehue/domain/entity/place/PlaceEntity.dart';
 import 'package:huehue/enum/StatusRequestEnum.dart';
 import 'package:huehue/presentation/blocs/place/place_bloc.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:responsive_grid/responsive_grid.dart';
 
 class MapDetailsPlace extends StatelessWidget {
@@ -104,21 +105,12 @@ class MapDetailsPlace extends StatelessWidget {
                                       style:
                                           const TextStyle(color: Colors.grey),
                                     ),
-                                    trailing: element.rating != null
-                                        ? Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              const Icon(Icons.star,
-                                                  color: Colors.amber,
-                                                  size: 20),
-                                              Text(
-                                                element.rating.toString(),
-                                                style: const TextStyle(
-                                                    fontSize: 16),
-                                              ),
-                                            ],
-                                          )
-                                        : null,
+                                    trailing: IconButton(
+                                      icon: const Icon(Iconsax.heart),
+                                      onPressed: () {
+                                        // onPlaceSelected(place, position); // Pasa la … del lugar seleccionado
+                                      },
+                                    ),
                                     onTap: () {
                                       // onPlaceSelected(place, position); // Pasa la posición del lugar seleccionado
                                       onTap(element, element.coordinates);
