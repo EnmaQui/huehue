@@ -22,8 +22,10 @@ class _DepartamentDetailScreenState extends State<DepartamentDetailScreen> {
     super.initState();
     final placeBloc = context.read<PlaceBloc>();
 
-    placeBloc.add(GetPlaceDetailEvent(
-        place: placeBloc.state.departamenSelected['placeId'] as String),);
+    placeBloc.add(
+      GetPlaceDetailEvent(
+          place: placeBloc.state.departamenSelected['placeId'] as String),
+    );
   }
 
   @override
@@ -31,57 +33,95 @@ class _DepartamentDetailScreenState extends State<DepartamentDetailScreen> {
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      appBar: AppBar(
-        title: BlocBuilder<PlaceBloc, PlaceState>(
-          builder: (context, state) {
-            return Text(state.departamenSelected['name'] ?? '',
-                style: const TextStyle(color: Colors.white));
-          },
+      // appBar: AppBar(
+      //   title: BlocBuilder<PlaceBloc, PlaceState>(
+      //     builder: (context, state) {
+      //       return Text(state.departamenSelected['name'] ?? '',
+      //           style: const TextStyle(color: Colors.white));
+      //     },
+      //   ),
+      //   centerTitle: true,
+      // ),
+      body: CustomScrollView(slivers: [
+        SliverAppBar(
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          elevation: 0,
+          pinned: true,
+          // expandedHeight: size.height * 0.08,
+          centerTitle: true,
+          title: BlocBuilder<PlaceBloc, PlaceState>(
+            builder: (context, state) {
+              return Text(
+                state.departamenSelected['name'] ?? '',
+                style: const TextStyle(color: Colors.white),
+              );
+            },
+          ),
         ),
-        centerTitle: true,
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            SizedBox(
-              width: size.width,
-              height: size.height * 0.075,
-              child: CategorySelectorWidget(
-                categories: const [
-                  'Iglesias',
-                  'Restaurantes',
-                  'Monumentos',
-                  'Edificios históricos',
-                  'Playas',
-                  'Reservas Naturales',
-                  'Parques',
-                  'Tiendas de conveniencia',
-                  'Centros comerciales',
-                  'Volcanes',
-                  'Montañas',
-                  'Islas',
-                ],
-                selectedCategory: 'Iglesias',
-                onCategoryChanged: (category) {},
+        SliverAppBar(
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          elevation: 0,
+          pinned: true,
+          expandedHeight: size.height * 0.08,
+          leading: const SizedBox(),
+          flexibleSpace: SizedBox(
+            width: size.width,
+            // height: size.height * 0.8,
+            child: CategorySelectorWidget(
+              categories: const [
+                'Iglesias',
+                'Restaurantes',
+                'Monumentos',
+                'Edificios históricos',
+                'Playas',
+                'Reservas Naturales',
+                'Parques',
+                'Tiendas de conveniencia',
+                'Centros comerciales',
+                'Volcanes',
+                'Montañas',
+                'Islas',
+              ],
+              selectedCategory: 'Iglesias',
+              onCategoryChanged: (category) {},
+            ),
+          ),
+        ),
+        SliverList(
+          delegate: SliverChildListDelegate(
+            [
+              const SizedBox(height: 20),
+              BlocBuilder<PlaceBloc, PlaceState>(
+                builder: (context, state) {
+                  if (state.statusRequestPlaceDetail ==
+                      StatusRequestEnum.pending) {
+                    return const CircularProgressIndicator();
+                  }
+
+                  if ((state.placeDetail?.photos ?? []).isEmpty) {
+                    return const SizedBox();
+                  }
+
+                  return PlacePhotos(photos: state.placeDetail?.photos ?? []);
+                },
               ),
-            ),
-            const SizedBox(height: 20),
-            BlocBuilder<PlaceBloc, PlaceState>(
-              builder: (context, state) {
-                if(state.statusRequestPlaceDetail == StatusRequestEnum.pending) {
-                  return const CircularProgressIndicator();
-                }
-
-                if((state.placeDetail?.photos ?? []).isEmpty) {
-                  return const SizedBox();
-                }
-
-                return PlacePhotos(photos: state.placeDetail?.photos ?? []);
-              },
-            ),
-          ],
+              const SizedBox(height: 20),
+              BlocBuilder<PlaceBloc, PlaceState>(
+                builder: (context, state) => Padding(
+                  padding: const EdgeInsets.only(left: 12),
+                  child: Text(
+                    state.departamenSelected['name'] ?? '',
+                    style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        fontSize: 32),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
+      ]),
     );
   }
 }
