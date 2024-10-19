@@ -261,9 +261,9 @@ class _MapScreenState extends State<MapScreen> {
     final size = MediaQuery.of(context).size;
     final placeBloc = context.read<PlaceBloc>();
     return Scaffold(
-      // appBar: AppBar(
-      //   title: const Text('Ubicación en el Mapa'),
-      // ),
+      appBar: AppBar(
+        title: const Text('Ubicado en el mapa'),
+      ),
       body: Stack(children: [
         Positioned.fill(
           child: GoogleMap(
@@ -274,10 +274,8 @@ class _MapScreenState extends State<MapScreen> {
             ),
              markers: markers,
             zoomControlsEnabled: false,
-            myLocationButtonEnabled: false,
             compassEnabled: false,
             myLocationEnabled: true,
-            mapToolbarEnabled: false,
             tiltGesturesEnabled: false,
             // style: MapConfig.whiteMap,
             onMapCreated: (controller) async {
@@ -331,6 +329,8 @@ class _MapScreenState extends State<MapScreen> {
           MapDetailsPlace(
           onTap: (place, location) {
             _onPlaceSelected(place, location);
+            mapController.animateCamera(CameraUpdate.newLatLng(location));
+
           }
         ),
       ]),
