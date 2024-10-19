@@ -1,75 +1,114 @@
 import 'package:flutter/material.dart';
 import 'package:huehue/const/assent.const.dart';
+import 'package:huehue/presentation/screen/pruebas/widgets/search_bar_widget.dart';
+import 'package:huehue/presentation/widgets/list/BaseListWidget.dart';
 
-import '../pruebas/widgets/category_slider.dart';
-import '../pruebas/widgets/departments_slider.dart';
-import '../pruebas/widgets/image_list.dart';
-import '../pruebas/widgets/top_image_widget.dart'; // Importamos los widgets
-
-class PruebasScreen extends StatefulWidget  {
+class PruebasScreen extends StatefulWidget {
   const PruebasScreen({super.key});
 
   @override
   State<PruebasScreen> createState() => _PruebasScreenState();
 }
 
-class _PruebasScreenState extends State<PruebasScreen>  with AutomaticKeepAliveClientMixin {
+class _PruebasScreenState extends State<PruebasScreen>
+    with AutomaticKeepAliveClientMixin {
   @override
   Widget build(BuildContext context) {
-    
     super.build(context);
+    final size = MediaQuery.of(context).size;
 
     return Scaffold(
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
             backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-            pinned: true,
-            expandedHeight: 200,
             elevation: 0,
             centerTitle: false,
-            stretch: true,
-            title: const Text('Catedral de Leon'),
-            titleTextStyle: Theme.of(context).textTheme.headlineSmall,
-            flexibleSpace: const FlexibleSpaceBar(
-              background: Image(
-                image: AssetImage(AsssentConst.catedral),
-                fit: BoxFit.cover,
-              ), // Usamos TopImageWidget
+            // stretch: true,
+            title: Row(
+              children: [
+                Image.asset(
+                  AsssentConst.logo,
+                  width: 35,
+                  height: 35,
+                ),
+                const SizedBox(width: 10),
+                const Text(
+                  'Huehue',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF0e647e),
+                  ),
+                ),
+              ],
             ),
           ),
           SliverAppBar(
             backgroundColor: Theme.of(context).scaffoldBackgroundColor,
             elevation: 0,
             pinned: true,
-            bottom: const PreferredSize(
-              preferredSize: Size.fromHeight(50), child: SizedBox(),
-            ),
-            flexibleSpace: const CategorySlider(title: "Categorías", colorIndex: 0),
+            flexibleSpace: const SafeArea(child: SearchBarWidget()),
           ),
           SliverList(
-            delegate: SliverChildListDelegate([
-              const DepartmentsSlider(title: "Departamentos", colorIndex: 1),  // Slider 2
-              const SizedBox(height: 20),
-              const Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Text(
-                  'Lugares más visitados',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF0e647e),
+            delegate: SliverChildListDelegate(
+              [
+                const SizedBox(height: 30),
+                Center(
+                  child: Container(
+                    width: size.width * 0.85,
+                    height: size.height * 0.3,
+                    decoration: BoxDecoration(
+                      color: Colors.green,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                 ),
-              ),
-              const ImageList(),  // Lista de imágenes
-            ],),
+                const SizedBox(height: 20),
+                const Padding(
+                  padding: EdgeInsets.only(left: 12),
+                  child: Text(
+                    'Departamentos',
+                    style: TextStyle(
+                      // color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                SizedBox(
+                  height: size.height * 0.30,
+                  child: BaseListWidget(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 12,
+                    ),
+
+                    scrollDirection: Axis.horizontal,
+                    itemCount: 10,
+                    itemBuilder: (context, index) {
+                      return Center(
+                        child: Container(
+                          width: size.width * 0.7,
+                          height: size.height * 0.3,
+                          decoration: BoxDecoration(
+                            color: Colors.green,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      );
+                    }
+                  ),
+                ),
+              ],
+            ),
           )
         ],
       ),
     );
   }
-  
+
   @override
   bool get wantKeepAlive => true;
 }
