@@ -45,9 +45,7 @@ class MapDetailsPlace extends StatelessWidget {
               child: SingleChildScrollView(
                 controller: scrollController,
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 6,
-                  ),
+                  padding: const EdgeInsets.all(15),
                   child: ResponsiveGridRow(
                     children: [
                       ResponsiveGridCol(

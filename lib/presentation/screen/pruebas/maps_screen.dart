@@ -31,6 +31,7 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> {
   late GoogleMapController mapController;
   List<Polyline> polylines = [];
+
   Set<Marker> markers = {};
   String selectedCategory = 'Iglesias';
   List<dynamic> places = [];
@@ -43,6 +44,7 @@ class _MapScreenState extends State<MapScreen> {
   void initState() {
     super.initState();
     final placeBloc = context.read<PlaceBloc>();
+
     placeBloc.add(FilterPlaceByTypeEvent(
       type: _getTypeFromCategory(placeBloc.state.selectedCategory),
       location: LatLng(widget.latitude, widget.longitude),
@@ -172,7 +174,7 @@ class _MapScreenState extends State<MapScreen> {
               Marker(
                 markerId: MarkerId(placeId),
                 position: place.coordinates,
-                infoWindow: InfoWindow(title:place.name),
+                infoWindow: InfoWindow(title: place.name),
               ),
             );
 
@@ -188,7 +190,7 @@ class _MapScreenState extends State<MapScreen> {
                   points: [
                     LatLng(userLatitude!,
                         userLongitude!), // Punto de inicio (ubicación del usuario)
-                    place.coordinates// Punto de destino (lugar seleccionado)
+                    place.coordinates // Punto de destino (lugar seleccionado)
                   ],
                   color: Colors.blue, // Color de la polilínea
                   width: 5, // Ancho de la polilínea
@@ -198,9 +200,7 @@ class _MapScreenState extends State<MapScreen> {
 
             // Centrar el mapa en el lugar seleccionado
             mapController.animateCamera(
-              CameraUpdate.newLatLng(
-                place.coordinates
-              ),
+              CameraUpdate.newLatLng(place.coordinates),
             );
 
             // Mostrar los detalles del lugar
@@ -256,6 +256,124 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
+  List<LatLng> decodePolyline(String poly) {
+    List<LatLng> polyline = [];
+    int index = 0, len = poly.length;
+    int lat = 0, lng = 0;
+
+    while (index < len) {
+      int b, shift = 0, result = 0;
+      do {
+        b = poly.codeUnitAt(index++) - 63;
+        result |= (b & 0x1f) << shift;
+        shift += 5;
+      } while (b >= 0x20);
+      int dlat = ((result >> 1) ^ -(result & 1));
+      lat += dlat;
+
+      shift = 0;
+      result = 0;
+      do {
+        b = poly.codeUnitAt(index++) - 63;
+        result |= (b & 0x1f) << shift;
+        shift += 5;
+      } while (b >= 0x20);
+      int dlng = ((result >> 1) ^ -(result & 1));
+      lng += dlng;
+
+      polyline.add(LatLng((lat / 1E5), (lng / 1E5)));
+    }
+    return polyline;
+  }
+
+  Future<void> _getDirections(LatLng origin, LatLng destination) async {
+    const String apiKey =
+        'AIzaSyCNNLly_rF6NkMMgoFAl5dv8lfCmu00mnY'; // Reemplaza con tu API Key
+    final String url =
+        'https://maps.googleapis.com/maps/api/directions/json?origin=${origin.latitude},${origin.longitude}&destination=${destination.latitude},${destination.longitude}&key=$apiKey&alternatives=true&departure_time=now&traffic_model=best_guess';
+
+    try {
+      final response = await http.get(Uri.parse(url));
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final List<dynamic> routes = data['routes'];
+
+        setState(() {
+          polylines.clear();
+
+          // Usar la primera ruta como la mejor ruta
+          if (routes.isNotEmpty) {
+            // Mejor ruta (verde)
+            String bestRoutePolyline = routes[0]['overview_polyline']['points'];
+            List<LatLng> bestRouteCoordinates =
+                decodePolyline(bestRoutePolyline);
+            polylines.add(
+              Polyline(
+                polylineId: PolylineId('best_route'),
+                points: bestRouteCoordinates,
+                color: Colors.green, // Mejor ruta en verde
+                width: 5,
+              ),
+            );
+
+            // Alternativas (gris)
+            for (var i = 1; i < routes.length; i++) {
+              String alternativePolyline =
+                  routes[i]['overview_polyline']['points'];
+              List<LatLng> alternativeCoordinates =
+                  decodePolyline(alternativePolyline);
+              polylines.add(
+                Polyline(
+                  polylineId: PolylineId('alternative_route_$i'),
+                  points: alternativeCoordinates,
+                  color: Colors.grey, // Alternativas en gris
+                  width: 3,
+                ),
+              );
+            }
+          }
+        });
+
+        // Centrar el mapa en la mejor ruta
+        if (routes.isNotEmpty) {
+          List<LatLng> firstRouteCoordinates =
+              decodePolyline(routes[0]['overview_polyline']['points']);
+          mapController.animateCamera(
+            CameraUpdate.newLatLngBounds(
+              _boundsFromLatLngList(firstRouteCoordinates),
+              50.0,
+            ),
+          );
+        }
+      } else {
+        print('Error al obtener la dirección: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Excepción al obtener direcciones: $e');
+    }
+  }
+
+  LatLngBounds _boundsFromLatLngList(List<LatLng> list) {
+    final southwestLat = list
+        .map((e) => e.latitude)
+        .reduce((value, element) => value < element ? value : element);
+    final southwestLng = list
+        .map((e) => e.longitude)
+        .reduce((value, element) => value < element ? value : element);
+    final northeastLat = list
+        .map((e) => e.latitude)
+        .reduce((value, element) => value > element ? value : element);
+    final northeastLng = list
+        .map((e) => e.longitude)
+        .reduce((value, element) => value > element ? value : element);
+
+    return LatLngBounds(
+      southwest: LatLng(southwestLat, southwestLng),
+      northeast: LatLng(northeastLat, northeastLng),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -272,7 +390,8 @@ class _MapScreenState extends State<MapScreen> {
               target: LatLng(widget.latitude, widget.longitude),
               zoom: 15,
             ),
-             markers: markers,
+            markers: markers,
+            polylines: polylines.toSet(),
             zoomControlsEnabled: false,
             compassEnabled: false,
             myLocationEnabled: true,
@@ -326,13 +445,30 @@ class _MapScreenState extends State<MapScreen> {
             ),
           ),
         ),
-          MapDetailsPlace(
-          onTap: (place, location) {
-            _onPlaceSelected(place, location);
-            mapController.animateCamera(CameraUpdate.newLatLng(location));
+        Positioned(
+          top: size.height * 0.4,
+          right: 16,
+          child: FloatingActionButton(
+            onPressed: () async {
+              if (markers.isNotEmpty) {
+                Marker destinationMarker = markers.first;
+                Position position = await Geolocator.getCurrentPosition(
+                    desiredAccuracy: LocationAccuracy.high);
 
-          }
+                await _getDirections(
+                  LatLng(position.latitude, position.longitude),
+                  destinationMarker.position,
+                );
+              }
+            },
+            tooltip: 'Cómo llegar',
+            child: const Icon(Icons.directions),
+          ),
         ),
+        MapDetailsPlace(onTap: (place, location) {
+          _onPlaceSelected(place, location);
+          mapController.animateCamera(CameraUpdate.newLatLng(location));
+        }),
       ]),
     );
   }
