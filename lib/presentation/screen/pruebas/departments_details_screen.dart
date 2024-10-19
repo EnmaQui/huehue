@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:iconsax/iconsax.dart';
 
 import '../pruebas/maps_screen.dart'; // Importa la nueva pantalla
 import '../pruebas/widgets_details/place_adress.dart';
@@ -34,7 +35,7 @@ class _PlaceDetailsScreenState extends State<PlaceDetailsScreen> {
 
   Future<void> fetchPlaceDetails() async {
     final response = await http.get(Uri.parse(
-      'https://maps.googleapis.com/maps/api/place/details/json?place_id=${widget.placeId}&fields=address_components,adr_address,business_status,formatted_address,geometry,icon,icon_mask_base_uri,icon_background_color,name,permanently_closed,photo,place_id,plus_code,type,url,utc_offset,vicinity,wheelchair_accessible_entrance,formatted_phone_number,international_phone_number,opening_hours,website,price_level,rating,user_ratings_total&key=AIzaSyCNNLly_rF6NkMMgoFAl5dv8lfCmu00mnY'));
+        'https://maps.googleapis.com/maps/api/place/details/json?place_id=${widget.placeId}&fields=address_components,adr_address,business_status,formatted_address,geometry,icon,icon_mask_base_uri,icon_background_color,name,permanently_closed,photo,place_id,plus_code,type,url,utc_offset,vicinity,wheelchair_accessible_entrance,formatted_phone_number,international_phone_number,opening_hours,website,price_level,rating,user_ratings_total&key=AIzaSyCNNLly_rF6NkMMgoFAl5dv8lfCmu00mnY'));
 
     if (response.statusCode == 200) {
       setState(() {
@@ -71,68 +72,80 @@ class _PlaceDetailsScreenState extends State<PlaceDetailsScreen> {
 
                     if (placeDetails!['formatted_address'] != null)
                       Padding(
- padding: const EdgeInsets.only(
+                        padding: const EdgeInsets.only(
                           left: 12,
-                        ),                        child: PlaceAddress(address: placeDetails!['formatted_address']),
+                        ),
+                        child: PlaceAddress(
+                            address: placeDetails!['formatted_address']),
                       ),
                     const SizedBox(height: 10),
 
                     if (placeDetails!['formatted_phone_number'] != null)
                       Padding(
- padding: const EdgeInsets.only(
+                        padding: const EdgeInsets.only(
                           left: 12,
-                        ),                        child: PlacePhoneNumber(phoneNumber: placeDetails!['formatted_phone_number']),
+                        ),
+                        child: PlacePhoneNumber(
+                            phoneNumber:
+                                placeDetails!['formatted_phone_number']),
                       ),
                     const SizedBox(height: 10),
 
                     if (placeDetails!['website'] != null)
                       Padding(
- padding: const EdgeInsets.only(
+                        padding: const EdgeInsets.only(
                           left: 12,
-                        ),                        child: PlaceWebsite(website: placeDetails!['website']),
+                        ),
+                        child: PlaceWebsite(website: placeDetails!['website']),
                       ),
                     const SizedBox(height: 10),
 
                     if (placeDetails!['business_status'] != null)
                       Padding(
- padding: const EdgeInsets.only(
+                        padding: const EdgeInsets.only(
                           left: 12,
-                        ),                        child: BusinessStatus(status: placeDetails!['business_status']),
+                        ),
+                        child: BusinessStatus(
+                            status: placeDetails!['business_status']),
                       ),
                     const SizedBox(height: 20),
 
-                    if (placeDetails!['photos'] != null && placeDetails!['photos'].isNotEmpty)
+                    if (placeDetails!['photos'] != null &&
+                        placeDetails!['photos'].isNotEmpty)
                       PlacePhotos(photos: placeDetails!['photos']),
                     const SizedBox(height: 20),
 
-                    if (placeDetails!['geometry'] != null)
-                      Padding(
- padding: const EdgeInsets.only(
-                          left: 12,
-                        ),                        child: PlaceGeometry(location: placeDetails!['geometry']['location']),
-                      ),
-                    const SizedBox(height: 20),
+                 
 
-                  // Botón para ver ubicación en el mapa
-                  ElevatedButton(
-                    onPressed: () {
-                      final location = placeDetails!['geometry']['location'];
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => MapScreen(
-                            latitude: location['lat'],
-                            longitude: location['lng'],
-                            placeId: placeDetails!['place_id'], // Asegúrate de pasar el placeId
-                          ),
-                        ),
-                      );
-                    },
-                      child: const Text('Ver en el mapa'),
-                    ),
+                    // Botón para ver ubicación en el mapa
+                    
                   ],
                 )
-              : const Center(child: Text('No se pudieron cargar los detalles del lugar')),
+              : const Center(
+                  child: Text('No se pudieron cargar los detalles del lugar')),
+            floatingActionButton: ElevatedButton(
+                      onPressed: () {
+                        final location = placeDetails!['geometry']['location'];
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MapScreen(
+                              latitude: location['lat'],
+                              longitude: location['lng'],
+                              placeId: placeDetails![
+                                  'place_id'], // Asegúrate de pasar el placeId
+                            ),
+                          ),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        shape: const CircleBorder(),
+                        padding: const EdgeInsets.all(24),
+                        backgroundColor: Colors.blue
+                      ),
+                      child: const Icon(Iconsax.map, color: Colors.white,),
+                    ),
+                    floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 }
