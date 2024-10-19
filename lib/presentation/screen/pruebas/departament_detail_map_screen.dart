@@ -106,7 +106,7 @@ class _DepartamenDetailMapScreenState extends State<DepartamenDetailMapScreen> {
                   BlocBuilder<PlaceBloc, PlaceState>(
                     builder: (context, state) {
                       if(state.statusGetPolylines != StatusRequestEnum.pending) {
-                        return Positioned(bottom: 0, child: const SizedBox());
+                        return const Positioned(bottom: 0, child: SizedBox());
                       }
 
                       return const Positioned.fill(
