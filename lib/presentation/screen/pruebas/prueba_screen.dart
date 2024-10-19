@@ -58,7 +58,7 @@ class _PruebasScreenState extends State<PruebasScreen>
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF0e647e),
+                    color: Colors.white,
                   ),
                 ),
               ],
@@ -78,8 +78,11 @@ class _PruebasScreenState extends State<PruebasScreen>
                   builder: (context, state) {
                     if (state.statusRequestImageUrlsByPlace ==
                         StatusRequestEnum.pending) {
-                      return const Center(
-                          child: CircularProgressIndicator.adaptive());
+                      return SizedBox(
+                        height: size.height * 0.30,
+                        child: const Center(
+                            child: CircularProgressIndicator.adaptive()),
+                      );
                     }
 
                     if (state.imageUrlsByPlace.isEmpty) {
@@ -101,7 +104,7 @@ class _PruebasScreenState extends State<PruebasScreen>
                   child: Text(
                     'Departamentos',
                     style: TextStyle(
-                      // color: Colors.white,
+                      color: Colors.white,
                       fontWeight: FontWeight.bold,
                       fontSize: 20,
                     ),
@@ -114,8 +117,11 @@ class _PruebasScreenState extends State<PruebasScreen>
                     builder: (context, state) {
                       if (state.statusRequestImageUrlsByPlace ==
                           StatusRequestEnum.pending) {
-                        return const Center(
-                          child: CircularProgressIndicator.adaptive(),
+                        return SizedBox(
+                          height: size.height * 0.30,
+                          child: const Center(
+                            child: CircularProgressIndicator.adaptive(),
+                          ),
                         );
                       }
 
@@ -167,6 +173,7 @@ class _PruebasScreenState extends State<PruebasScreen>
                                       style: const TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold,
+                                        color: Colors.white
                                       ),
                                     ),
                                   ],

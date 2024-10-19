@@ -69,7 +69,7 @@ class _MyAppState extends State<MyApp> {
             scrolledUnderElevation: 0,
             backgroundColor: Colors.transparent,
             systemOverlayStyle:
-                SystemUiOverlayStyle(statusBarIconBrightness: Brightness.dark),
+                SystemUiOverlayStyle(statusBarIconBrightness: Brightness.light),
           ),
           applyElevationOverlayColor: false,
           primarySwatch: Colors.blue,

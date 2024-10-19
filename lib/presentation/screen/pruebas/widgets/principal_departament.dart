@@ -19,6 +19,14 @@ class PrincipalDepartament extends StatelessWidget {
       height: size.height * 0.3,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.black26,
+            blurRadius: 2.0,
+            spreadRadius: 1.0,
+            offset: Offset(1, 1),
+          ),
+        ]
       ),
       child: Stack(
         children: [

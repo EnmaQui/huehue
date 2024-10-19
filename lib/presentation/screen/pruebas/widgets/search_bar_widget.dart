@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
 
 class SearchBarWidget extends StatelessWidget {
   const SearchBarWidget({super.key});
@@ -12,8 +13,9 @@ class SearchBarWidget extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16.0),
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
+          // color: Color(0xffF4F6FF),
+          border: Border.all(color: Colors.grey.withOpacity(0.5), width: 2),
+          borderRadius: BorderRadius.circular(24),
           boxShadow: const [
             BoxShadow(
               color: Colors.black26,
@@ -23,7 +25,13 @@ class SearchBarWidget extends StatelessWidget {
             ),
           ],
         ),
-        child: const Text("Buscalo"),
+        child: const  Row(
+          children: [
+             Icon(Iconsax.search_normal, color: Colors.white),
+             SizedBox(width: 10),
+              Text("Buscalo", style: TextStyle(color: Colors.white)),
+          ],
+        ),
       ),
     );
   }
