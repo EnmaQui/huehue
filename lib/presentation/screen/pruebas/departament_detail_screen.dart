@@ -5,6 +5,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:huehue/const/data.const.dart';
 import 'package:huehue/enum/StatusRequestEnum.dart';
 import 'package:huehue/presentation/blocs/place/place_bloc.dart';
+import 'package:huehue/presentation/screen/pruebas/departament_detail_map_screen.dart';
 import 'package:huehue/presentation/screen/pruebas/widgets_details/place_photos.dart';
 import 'package:huehue/presentation/screen/pruebas/widgets_maps/categorias_widget.dart';
 import 'package:huehue/utils/place.utils.dart';
@@ -96,8 +97,8 @@ class _DepartamentDetailScreenState extends State<DepartamentDetailScreen> {
                         final state = context.read<PlaceBloc>().state;
                         placeBloc.add(FilterPlaceByTypeEvent(
                           location: state.placeDetail!.location,
-                          type:
-                              PlaceUtils.getTypeFromCategory(state.selectedCategory),
+                          type: PlaceUtils.getTypeFromCategory(
+                              state.selectedCategory),
                         ));
                       },
                     ),
@@ -111,14 +112,16 @@ class _DepartamentDetailScreenState extends State<DepartamentDetailScreen> {
                         builder: (context, state) {
                           if (state.statusRequestPlaceDetail ==
                               StatusRequestEnum.pending) {
-                            return const Center(child: CircularProgressIndicator());
+                            return const Center(
+                                child: CircularProgressIndicator());
                           }
-            
+
                           if ((state.placeDetail?.photos ?? []).isEmpty) {
                             return const SizedBox();
                           }
-            
-                          return PlacePhotos(photos: state.placeDetail?.photos ?? []);
+
+                          return PlacePhotos(
+                              photos: state.placeDetail?.photos ?? []);
                         },
                       ),
                       const SizedBox(height: 20),
@@ -127,30 +130,35 @@ class _DepartamentDetailScreenState extends State<DepartamentDetailScreen> {
                           padding: const EdgeInsets.only(left: 12),
                           child: Text(
                             state.departamenSelected['name'] ?? '',
-                            style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                                fontSize: 32),
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleLarge!
+                                .copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                    fontSize: 32),
                           ),
                         ),
                       ),
                       const SizedBox(height: 20),
                       BlocBuilder<PlaceBloc, PlaceState>(
                         builder: (context, state) {
-                          if (state.statusRequestPlace == StatusRequestEnum.pending) {
-                            return const Center(child: CircularProgressIndicator());
+                          if (state.statusRequestPlace ==
+                              StatusRequestEnum.pending) {
+                            return const Center(
+                                child: CircularProgressIndicator(),);
                           }
-            
+
                           if (state.nearbyPlaces.isEmpty) {
                             return const Center(
                                 child: Text('No hay lugares cercanos'));
                           }
-            
+
                           return Column(
                             children: state.nearbyPlaces
                                 .map(
                                   (place) => Card(
-                                    color: Color(0xff0C2D57),
+                                    color: const Color(0xff0C2D57),
                                     elevation: 4,
                                     margin: const EdgeInsets.symmetric(
                                         vertical: 8, horizontal: 16),
@@ -166,14 +174,16 @@ class _DepartamentDetailScreenState extends State<DepartamentDetailScreen> {
                                       ),
                                       subtitle: Text(
                                         place.vicinity,
-                                        style: const TextStyle(color: Colors.grey),
+                                        style:
+                                            const TextStyle(color: Colors.grey),
                                       ),
                                       trailing: place.rating != null
                                           ? Row(
                                               mainAxisSize: MainAxisSize.min,
                                               children: [
                                                 const Icon(Icons.star,
-                                                    color: Colors.amber, size: 20),
+                                                    color: Colors.amber,
+                                                    size: 20),
                                                 Text(place.rating.toString(),
                                                     style: const TextStyle(
                                                         fontSize: 16)),
@@ -214,34 +224,38 @@ class _DepartamentDetailScreenState extends State<DepartamentDetailScreen> {
             bottom: size.height * 0.08,
             left: 0,
             right: 0,
-            child: Center(
-              child: Container(
-                      padding: const EdgeInsets.all(12),
-                      width: size.width * 0.24,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(32),
-                        boxShadow: const [
-              BoxShadow(
-                color: Colors.black26,
-                blurRadius: 6.0,
-                spreadRadius: 1.0,
-                offset: Offset(1, 1),
+            child: GestureDetector(
+              onTap: () => Navigator.of(context)
+                  .pushNamed(DepartamenDetailMapScreen.routeName),
+              child: Center(
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  width: size.width * 0.24,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(32),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 6.0,
+                        spreadRadius: 1.0,
+                        offset: Offset(1, 1),
+                      ),
+                    ],
+                  ),
+                  child: const Row(
+                    children: [
+                      Icon(Iconsax.location),
+                      SizedBox(width: 10),
+                      Text("Mapa"),
+                    ],
+                  ),
+                ),
               ),
-                        ],
-                      ),
-                      child: const Row(
-                        children: [
-              Icon(Iconsax.location),
-              SizedBox(width: 10),
-              Text("Mapa"),
-                        ],
-                      ),
-                    ),
             ),
           )
         ],
       ),
-        );
+    );
   }
 }

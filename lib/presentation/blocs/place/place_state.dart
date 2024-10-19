@@ -20,6 +20,9 @@ class PlaceState extends Equatable {
 
   final Map<String, String> departamenSelected;
   
+  final Set<Polyline>? polylines;
+  final StatusRequestEnum statusGetPolylines;
+  
   const PlaceState({
     this.statusRequestPlace = StatusRequestEnum.idle,
     this.userLocation,
@@ -33,6 +36,8 @@ class PlaceState extends Equatable {
     this.statusRequestImageUrlsByPlace = StatusRequestEnum.idle,
     this.selectedCategory = 'Iglesias',
     this.departamenSelected = const {},
+    this.polylines = const {},
+    this.statusGetPolylines = StatusRequestEnum.idle,
   });
 
   PlaceState copyWith({
@@ -47,7 +52,9 @@ class PlaceState extends Equatable {
     List<String>? imageUrlsByPlace,
     StatusRequestEnum? statusRequestImageUrlsByPlace,
     String? selectedCategory,
-  Map<String, String>? departamenSelected
+  Map<String, String>? departamenSelected,
+    Set<Polyline>? polylines,
+    StatusRequestEnum? statusGetPolylines,
 
   }) {
     return PlaceState(
@@ -62,7 +69,9 @@ class PlaceState extends Equatable {
       imageUrlsByPlace: imageUrlsByPlace ?? this.imageUrlsByPlace,
       statusRequestImageUrlsByPlace: statusRequestImageUrlsByPlace ?? this.statusRequestImageUrlsByPlace,
       selectedCategory: selectedCategory ?? this.selectedCategory,
-      departamenSelected: departamenSelected ?? this.departamenSelected
+      departamenSelected: departamenSelected ?? this.departamenSelected,
+      polylines: polylines ?? this.polylines,
+      statusGetPolylines: statusGetPolylines ?? this.statusGetPolylines,
     );
   }
 
@@ -77,6 +86,7 @@ class PlaceState extends Equatable {
     imageUrlsByPlace,
     statusRequestImageUrlsByPlace,
     selectedCategory,
-    departamenSelected
+    departamenSelected,
+    statusGetPolylines
   ];
 }

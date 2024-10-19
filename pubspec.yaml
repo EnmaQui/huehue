@@ -54,6 +54,8 @@ dependencies:
   responsive_grid: 2.4.4
   google_fonts: 6.2.1
   cached_network_image: ^3.4.1
+  flutter_rating: ^2.0.2
+  flutter_polyline_points: ^2.1.0
 
 dev_dependencies:
   flutter_test:

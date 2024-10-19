@@ -1,7 +1,10 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:huehue/const/data.const.dart';
 import 'package:huehue/domain/entity/place/PlaceDetailEntity.dart';
 import 'package:huehue/domain/entity/place/PlaceEntity.dart';
 import 'package:huehue/domain/repository/google/google.map.repository.dart';
@@ -14,6 +17,7 @@ part 'place_state.dart';
 
 class PlaceBloc extends Bloc<PlaceEvent, PlaceState> {
   final GoogleMapRepository googleMapRepository;
+  PolylinePoints polylinePoints = PolylinePoints();
 
   PlaceBloc({
     required this.googleMapRepository,
@@ -24,6 +28,51 @@ class PlaceBloc extends Bloc<PlaceEvent, PlaceState> {
     on<GetPlaceRating>(_getPlaceRating);
     on<SetSelectedCategory>(_setSelectedCategory);
     on<SetSelectedDepartment>(_setSelectedDepartment);
+    on<GetPolilyesByLocation>(_getPolilyesByLocation);
+  }
+
+  Future<void> _getPolilyesByLocation(
+    GetPolilyesByLocation event,
+    Emitter<PlaceState> emit,
+  ) async {
+    try {
+      emit(state.copyWith(statusGetPolylines: StatusRequestEnum.pending));
+
+      final myLocation = await LocationUtils.getCurrentLocation();
+
+      final result = await polylinePoints.getRouteBetweenCoordinates(
+        googleApiKey: DataConst.googleApiKey,
+        request: PolylineRequest(
+          origin: PointLatLng(
+            myLocation!.latitude,
+            myLocation.longitude,
+          ),
+          destination: PointLatLng(
+            event.location.latitude,
+            event.location.longitude,
+          ),
+          mode: TravelMode.driving,
+        ),
+      );
+
+      emit(state.copyWith(
+        statusGetPolylines: StatusRequestEnum.success,
+        polylines: {
+          Polyline(
+            polylineId: const PolylineId('poly'),
+            color: const  Color(0XFF00BFFF),
+            points: result.points
+                .map((element) => LatLng(
+                      element.latitude,
+                      element.longitude,
+                    ))
+                .toList(),
+          )
+        },
+      ));
+    } catch (e) {
+      emit(state.copyWith(statusGetPolylines: StatusRequestEnum.error));
+    }
   }
 
   void _setSelectedDepartment(

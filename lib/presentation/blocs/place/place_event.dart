@@ -47,3 +47,10 @@ class SetSelectedDepartment extends PlaceEvent {
     required this.department
   });
 }
+
+class GetPolilyesByLocation extends PlaceEvent {
+  final LatLng location;
+  const GetPolilyesByLocation({
+    required this.location
+  });
+}
