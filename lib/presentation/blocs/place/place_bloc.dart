@@ -22,6 +22,14 @@ class PlaceBloc extends Bloc<PlaceEvent, PlaceState> {
     on<GetPlaceDetailEvent>(_getPlaceDetail);
     on<GetPlaceRating>(_getPlaceRating);
     on<SetSelectedCategory>(_setSelectedCategory);
+    on<SetSelectedDepartment>(_setSelectedDepartment);
+  }
+
+  void _setSelectedDepartment(
+    SetSelectedDepartment event,
+    Emitter<PlaceState> emit,
+  ) {
+    emit(state.copyWith(departamenSelected: event.department));
   }
 
   void _setSelectedCategory(
@@ -58,10 +66,10 @@ class PlaceBloc extends Bloc<PlaceEvent, PlaceState> {
    try {
       emit(state.copyWith(
       statusRequestPlaceDetail: StatusRequestEnum.pending,
-      placeSelected: event.place,
+      // placeSelected: event.place,
     ));
 
-    final place = await googleMapRepository.getPlaceDetails(event.place.placeId);
+    final place = await googleMapRepository.getPlaceDetailsUni(event.place);
     
     emit(state.copyWith(
       statusRequestPlaceDetail: StatusRequestEnum.success,

@@ -41,7 +41,7 @@ class GoogleMapper {
       description: placeDetailModel.description ?? '',
       website: placeDetailModel.website ?? '',
       rating: placeDetailModel.rating ?? 0.0,
-      photos: [],
+      photos: placeDetailModel.photos ?? [],
       reviews: [],
       openingHours: placeDetailModel.openingHours == null ? null : PlaceOpeningEntity(
         openNow: placeDetailModel.openingHours?.openNow ?? false,

@@ -7,6 +7,7 @@ import 'package:huehue/const/data.const.dart';
 import 'package:huehue/const/departaments.const.dart';
 import 'package:huehue/enum/StatusRequestEnum.dart';
 import 'package:huehue/presentation/blocs/place/place_bloc.dart';
+import 'package:huehue/presentation/screen/pruebas/departament_detail_screen.dart';
 import 'package:huehue/presentation/screen/pruebas/widgets/principal_departament.dart';
 import 'package:huehue/presentation/screen/pruebas/widgets/search_bar_widget.dart';
 import 'package:huehue/presentation/widgets/list/BaseListWidget.dart';
@@ -36,6 +37,7 @@ class _PruebasScreenState extends State<PruebasScreen>
   Widget build(BuildContext context) {
     super.build(context);
     final size = MediaQuery.of(context).size;
+    final placeBloc = context.read<PlaceBloc>();
 
     return Scaffold(
       body: CustomScrollView(
@@ -141,42 +143,52 @@ class _PruebasScreenState extends State<PruebasScreen>
                             final nameDepartament =
                                 departamentos[index]['name'] as String;
                             final image = state.imageUrlsByPlace[index];
-                            return Center(
-                              child: SizedBox(
-                                width: size.width * 0.5,
-                                height: size.height * 0.3,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.circular(12),
-                                      child: CachedNetworkImage(
-                                        width: double.infinity,
-                                        height: size.height * 0.20,
-                                        imageUrl: image,
-                                        fit: BoxFit.cover,
-                                        progressIndicatorBuilder:
-                                            (context, url, progress) =>
-                                                const Center(
-                                          child: CupertinoActivityIndicator(),
-                                        ),
-                                        errorWidget: (context, url, error) =>
-                                            const Center(
-                                          child: Icon(Icons.error),
+                            return GestureDetector(
+                              onTap: () {
+                                placeBloc.add(
+                                  SetSelectedDepartment(
+                                    department: departamentos[index],
+                                  )
+                                );
+                                Navigator.of(context).pushNamed(DepartamentDetailScreen.routeName);
+                              },
+                              child: Center(
+                                child: SizedBox(
+                                  width: size.width * 0.5,
+                                  height: size.height * 0.3,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(12),
+                                        child: CachedNetworkImage(
+                                          width: double.infinity,
+                                          height: size.height * 0.20,
+                                          imageUrl: image,
+                                          fit: BoxFit.cover,
+                                          progressIndicatorBuilder:
+                                              (context, url, progress) =>
+                                                  const Center(
+                                            child: CupertinoActivityIndicator(),
+                                          ),
+                                          errorWidget: (context, url, error) =>
+                                              const Center(
+                                            child: Icon(Icons.error),
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                    const SizedBox(height: 10),
-                                    Text(
-                                      nameDepartament,
-                                      textAlign: TextAlign.left,
-                                      style: const TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white
+                                      const SizedBox(height: 10),
+                                      Text(
+                                        nameDepartament,
+                                        textAlign: TextAlign.left,
+                                        style: const TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               ),
                             );

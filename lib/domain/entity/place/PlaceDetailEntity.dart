@@ -10,7 +10,7 @@ class PlaceDetailEntity {
   PlaceOpeningEntity? openingHours;
   double rating;
   int reviewsCount;
-  List<String> photos;
+  List<String>? photos;
   List<PlaceReviewEntity> reviews;
 
   PlaceDetailEntity({
@@ -22,7 +22,7 @@ class PlaceDetailEntity {
     required this.openingHours,
     required this.rating,
     required this.reviewsCount,
-    required this.photos,
+    this.photos,
     required this.reviews,
   });
 }

@@ -22,7 +22,7 @@ class PrincipalDepartament extends StatelessWidget {
         boxShadow: const [
           BoxShadow(
             color: Colors.black26,
-            blurRadius: 2.0,
+            blurRadius: 4.0,
             spreadRadius: 1.0,
             offset: Offset(1, 1),
           ),

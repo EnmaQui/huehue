@@ -19,7 +19,7 @@ class FilterPlaceByTypeEvent extends PlaceEvent {
 }
 
 class GetPlaceDetailEvent extends PlaceEvent {
-  final PlaceEntity place;
+  final String place;
   const GetPlaceDetailEvent({
     required this.place,
   });
@@ -38,5 +38,12 @@ class SetSelectedCategory extends PlaceEvent {
   final String category;
   const SetSelectedCategory({
     required this.category
+  });
+}
+
+class SetSelectedDepartment extends PlaceEvent {
+  final Map<String, String> department;
+  const SetSelectedDepartment({
+    required this.department
   });
 }

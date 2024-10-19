@@ -135,7 +135,7 @@ class _MapScreenState extends State<MapScreen>
   // Navegar a la pantalla de detalles del lugar
   void _navigateToPlaceDetail(PlaceEntity place) {
     context.read<PlaceBloc>().add(GetPlaceDetailEvent(
-      place: place,
+      place: place.placeId,
     ));
     Navigator.of(context).pushNamed(PlaceDetailScreen.routeName);
   }

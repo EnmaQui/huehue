@@ -70,4 +70,19 @@ class GoogleMapRepositoryImpl extends GoogleMapRepository {
       rethrow;
     }
   }
+  
+  @override
+  Future<PlaceDetailEntity?> getPlaceDetailsUni(String placeId) async {
+    try {
+      final reponse = await googleMapDataSource.getPlaceDetails(placeId);
+
+      if(reponse != null) {
+        return GoogleMapper.placeDetailModeltoEntity(reponse);
+      }
+
+      return null;
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

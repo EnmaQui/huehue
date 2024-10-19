@@ -17,6 +17,8 @@ class PlaceState extends Equatable {
   final StatusRequestEnum statusRequestImageUrlsByPlace;
 
   final String selectedCategory;
+
+  final Map<String, String> departamenSelected;
   
   const PlaceState({
     this.statusRequestPlace = StatusRequestEnum.idle,
@@ -30,6 +32,7 @@ class PlaceState extends Equatable {
     this.imageUrlsByPlace = const [],
     this.statusRequestImageUrlsByPlace = StatusRequestEnum.idle,
     this.selectedCategory = 'Iglesias',
+    this.departamenSelected = const {},
   });
 
   PlaceState copyWith({
@@ -43,7 +46,9 @@ class PlaceState extends Equatable {
     StatusRequestEnum? statusRequestPlaceDetail,
     List<String>? imageUrlsByPlace,
     StatusRequestEnum? statusRequestImageUrlsByPlace,
-    String? selectedCategory
+    String? selectedCategory,
+  Map<String, String>? departamenSelected
+
   }) {
     return PlaceState(
       statusRequestPlace: statusRequestPlace ?? this.statusRequestPlace,
@@ -56,7 +61,8 @@ class PlaceState extends Equatable {
       statusRequestPlaceDetail: statusRequestPlaceDetail ?? this.statusRequestPlaceDetail,
       imageUrlsByPlace: imageUrlsByPlace ?? this.imageUrlsByPlace,
       statusRequestImageUrlsByPlace: statusRequestImageUrlsByPlace ?? this.statusRequestImageUrlsByPlace,
-      selectedCategory: selectedCategory ?? this.selectedCategory
+      selectedCategory: selectedCategory ?? this.selectedCategory,
+      departamenSelected: departamenSelected ?? this.departamenSelected
     );
   }
 
@@ -70,6 +76,7 @@ class PlaceState extends Equatable {
     statusRequestPlaceDetail,
     imageUrlsByPlace,
     statusRequestImageUrlsByPlace,
-    selectedCategory
+    selectedCategory,
+    departamenSelected
   ];
 }

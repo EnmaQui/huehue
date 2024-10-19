@@ -7,4 +7,5 @@ abstract class GoogleMapRepository {
   Future<List<PlaceEntity>> getNearbyPlaces(LatLng userLocation,  int radius, String type);
   Future<PlaceDetailEntity?> getPlaceDetails(String placeId);
   Future<List<String>> fetchImageUrls(List<String> placeIds);
+  Future<PlaceDetailEntity?> getPlaceDetailsUni(String placeId);
 }

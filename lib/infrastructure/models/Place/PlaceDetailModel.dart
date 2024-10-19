@@ -22,6 +22,7 @@ class PlaceDetailModel {
     required this.openingHours,
     required this.rating,
     required this.reviewsCount,
+    this.photos,
   });
 
   factory PlaceDetailModel.fromJson(Map<String, dynamic> json) {
@@ -34,6 +35,8 @@ class PlaceDetailModel {
       openingHours: json['opening_hours'] == null ? null : PlaceOpeningModel.fromJson(json['opening_hours']),
       rating: json['rating'],
       reviewsCount:  json['user_ratings_total'] ?? 0,
+      photos: json['photos'] == null ? null : List<String>.from(json['photos'].map((e) => e['photo_reference'])),
+      
     );
   }
 

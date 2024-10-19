@@ -33,7 +33,8 @@ class CategorySelectorWidget extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10), // Padding vertical para más espacio
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                color: isSelected ? Colors.blue : Colors.grey[300],
+                color: isSelected ? Colors.blue : null,
+                border: Border.all(color: Colors.blue, width: 2),
                 borderRadius: BorderRadius.circular(30), // Mayor radio para esquinas más redondeadas
                 boxShadow: isSelected
                     ? [
@@ -47,10 +48,10 @@ class CategorySelectorWidget extends StatelessWidget {
               ),
               child: Text(
                 categories[index],
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 16, // Tamaño de fuente más grande
                   fontWeight: FontWeight.bold, // Negrita para mejor visibilidad
-                  color: isSelected ? Colors.white : Colors.black,
+                  color: Colors.white,
                 ),
               ),
             ),
