@@ -8,6 +8,7 @@ class PlaceModel {
   final dynamic rating;
   final String vicinity;
   final List<String> photos;
+  final int? priceLevel;
 
   PlaceModel({
     required this.placeId,
@@ -17,6 +18,7 @@ class PlaceModel {
     required this.rating,
     required this.vicinity,
     required this.photos,
+    this.priceLevel,
   });
 
   // Método para decodificar un JSON en un objeto PlaceModel
@@ -32,6 +34,7 @@ class PlaceModel {
       rating: json['rating'],
       vicinity: json['vicinity'],
       photos: json['photos'] != null ? List<String>.from(json['photos'].map((photo) => photo['photo_reference'])) : [],
+      priceLevel: json['price_level'],
     );
   }
 }

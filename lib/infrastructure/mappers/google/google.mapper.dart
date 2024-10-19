@@ -4,6 +4,7 @@ import 'package:huehue/domain/entity/place/PlaceEntity.dart';
 import 'package:huehue/domain/entity/place/PlaceOpenCloseEntity.dart';
 import 'package:huehue/domain/entity/place/PlaceOpeningEntity.dart';
 import 'package:huehue/domain/entity/place/PlaceReviewEntity.dart';
+import 'package:huehue/enum/PriceLevelEnum.dart';
 import 'package:huehue/infrastructure/models/Place/PlaceDetailModel.dart';
 import 'package:huehue/infrastructure/models/Place/PlaceModel.dart';
 import 'package:huehue/infrastructure/models/Place/PlaceReviewerModel.dart';
@@ -15,7 +16,7 @@ class GoogleMapper {
       reviewerName: placeReviewerModel.reviewerName,
       reviewText: placeReviewerModel.reviewText,
       rating: placeReviewerModel.rating,
-      photos: placeReviewerModel.photos
+      photos: placeReviewerModel.photos,
     );
   }
   
@@ -28,6 +29,7 @@ class GoogleMapper {
       rating: placeModel.rating,
       vicinity: placeModel.vicinity,
       photos: placeModel.photos,
+      priceLevel: placeModel.priceLevel == null ? null : PriceLevelExtension.fromValue(placeModel.priceLevel!)
     );
   }
 
