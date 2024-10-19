@@ -7,6 +7,7 @@ import 'package:huehue/domain/entity/place/PlaceEntity.dart';
 import 'package:huehue/domain/repository/google/google.map.repository.dart';
 import 'package:huehue/enum/StatusRequestEnum.dart';
 import 'package:huehue/utils/location.utils.dart';
+import 'package:huehue/utils/place.utils.dart';
 
 part 'place_event.dart';
 part 'place_state.dart';
@@ -39,23 +40,22 @@ class PlaceBloc extends Bloc<PlaceEvent, PlaceState> {
     emit(state.copyWith(selectedCategory: event.category));
   }
 
-
   Future<void> _getPlaceRating(
     GetPlaceRating event,
     Emitter<PlaceState> emit,
   ) async {
     try {
-      emit(state.copyWith(statusRequestImageUrlsByPlace: StatusRequestEnum.pending));
+      emit(state.copyWith(
+          statusRequestImageUrlsByPlace: StatusRequestEnum.pending));
 
       final reponse = await googleMapRepository.fetchImageUrls(event.placeIds);
 
       emit(state.copyWith(
-        statusRequestImageUrlsByPlace: StatusRequestEnum.success,
-        imageUrlsByPlace: reponse
-      ));
-
+          statusRequestImageUrlsByPlace: StatusRequestEnum.success,
+          imageUrlsByPlace: reponse));
     } catch (e) {
-      emit(state.copyWith(statusRequestImageUrlsByPlace: StatusRequestEnum.error));
+      emit(state.copyWith(
+          statusRequestImageUrlsByPlace: StatusRequestEnum.error));
     }
   }
 
@@ -63,23 +63,26 @@ class PlaceBloc extends Bloc<PlaceEvent, PlaceState> {
     GetPlaceDetailEvent event,
     Emitter<PlaceState> emit,
   ) async {
-   try {
+    try {
       emit(state.copyWith(
-      statusRequestPlaceDetail: StatusRequestEnum.pending,
-      // placeSelected: event.place,
-    ));
+        statusRequestPlaceDetail: StatusRequestEnum.pending,
+        // placeSelected: event.place,
+      ));
 
-    final place = await googleMapRepository.getPlaceDetailsUni(event.place);
-    
-    emit(state.copyWith(
-      statusRequestPlaceDetail: StatusRequestEnum.success,
-      placeDetail: place,
-    ));
-   } catch (e) {
-     emit(state.copyWith(
-       statusRequestPlaceDetail: StatusRequestEnum.error
-     ));
-   }
+      final place = await googleMapRepository.getPlaceDetailsUni(event.place);
+
+      add(FilterPlaceByTypeEvent(
+        location: place!.location,
+        type: PlaceUtils.getTypeFromCategory(state.selectedCategory),
+      ));
+
+      emit(state.copyWith(
+        statusRequestPlaceDetail: StatusRequestEnum.success,
+        placeDetail: place,
+      ));
+    } catch (e) {
+      emit(state.copyWith(statusRequestPlaceDetail: StatusRequestEnum.error));
+    }
   }
 
   Future<void> _filterPlaceByType(
@@ -89,11 +92,12 @@ class PlaceBloc extends Bloc<PlaceEvent, PlaceState> {
     // if(state.userLocation == null) return;
 
     emit(state.copyWith(statusRequestPlace: StatusRequestEnum.pending));
-    final response = await googleMapRepository.getNearbyPlaces(event.location, 1500, event.type);
+    final response = await googleMapRepository.getNearbyPlaces(
+        event.location, 1500, event.type);
 
-     final filteredPlaces =
-          response.where((place) => place.types.contains(event.type)).toList();
-    
+    final filteredPlaces =
+        response.where((place) => place.types.contains(event.type)).toList();
+
     emit(state.copyWith(
       statusRequestPlace: StatusRequestEnum.success,
       nearbyPlaces: filteredPlaces,

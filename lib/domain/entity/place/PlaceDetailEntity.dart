@@ -1,3 +1,4 @@
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:huehue/domain/entity/place/PlaceOpeningEntity.dart';
 import 'package:huehue/domain/entity/place/PlaceReviewEntity.dart';
 
@@ -12,6 +13,7 @@ class PlaceDetailEntity {
   int reviewsCount;
   List<String>? photos;
   List<PlaceReviewEntity> reviews;
+  LatLng location;
 
   PlaceDetailEntity({
     required this.name,
@@ -24,5 +26,6 @@ class PlaceDetailEntity {
     required this.reviewsCount,
     this.photos,
     required this.reviews,
+    required this.location
   });
 }

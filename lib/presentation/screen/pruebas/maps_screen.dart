@@ -416,14 +416,14 @@ class _MapScreenState extends State<MapScreen> {
                     'Montañas',
                     'Islas',
                   ],
-                  selectedCategory: state.selectedCategory,
-                  onCategoryChanged: (category) {
-                    placeBloc.add(SetSelectedCategory(category: category));
-                    placeBloc.add(FilterPlaceByTypeEvent(
-                      type: _getTypeFromCategory(category),
-                      location: LatLng(widget.latitude, widget.longitude),
-                    ));
-                  },
+                  // selectedCategory: state.selectedCategory,
+                  // onCategoryChanged: (category) {
+                  //   placeBloc.add(SetSelectedCategory(category: category));
+                  //   placeBloc.add(FilterPlaceByTypeEvent(
+                  //     type: _getTypeFromCategory(category),
+                  //     location: LatLng(widget.latitude, widget.longitude),
+                  //   ));
+                  // },
                 );
               },
             ),

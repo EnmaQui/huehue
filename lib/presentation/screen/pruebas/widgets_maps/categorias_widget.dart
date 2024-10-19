@@ -5,10 +5,12 @@ import 'package:huehue/presentation/widgets/list/BaseListWidget.dart';
 
 class CategorySelectorWidget extends StatelessWidget {
   final List<String> categories;
+  final VoidCallback? onChange;
 
   const CategorySelectorWidget({
     super.key,
     required this.categories,
+    this.onChange,
   });
 
   @override
@@ -28,6 +30,9 @@ class CategorySelectorWidget extends StatelessWidget {
               return GestureDetector(
                 onTap: () {
                   placeBloc.add(SetSelectedCategory(category: categories[index]));
+                  if(onChange != null) {
+                    onChange!();
+                  }
                 },
                 child: Container(
                   // margin: const EdgeInsets.symmetric(horizontal: 8), // Espaciado entre los botones

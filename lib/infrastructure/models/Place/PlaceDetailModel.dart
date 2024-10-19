@@ -1,3 +1,4 @@
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:huehue/infrastructure/models/Place/PlaceOpeningModel.dart';
 import 'package:huehue/infrastructure/models/Place/PlaceReviewerModel.dart';
 
@@ -12,6 +13,7 @@ class PlaceDetailModel {
   int? reviewsCount;
   List<PlaceReviewModel>? reviews;
   List<String>? photos;
+  LatLng location;
 
   PlaceDetailModel({
     required this.name,
@@ -23,6 +25,7 @@ class PlaceDetailModel {
     required this.rating,
     required this.reviewsCount,
     this.photos,
+    required this.location,
   });
 
   factory PlaceDetailModel.fromJson(Map<String, dynamic> json) {
@@ -36,7 +39,7 @@ class PlaceDetailModel {
       rating: json['rating'],
       reviewsCount:  json['user_ratings_total'] ?? 0,
       photos: json['photos'] == null ? null : List<String>.from(json['photos'].map((e) => e['photo_reference'])),
-      
+      location: LatLng(json['geometry']['location']['lat'], json['geometry']['location']['lng']),
     );
   }
 
