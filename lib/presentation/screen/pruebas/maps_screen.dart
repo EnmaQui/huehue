@@ -181,22 +181,6 @@ class _MapScreenState extends State<MapScreen> {
             // Limpiar las polilíneas existentes
             polylines.clear();
 
-            // Crear una nueva polilínea desde la ubicación del usuario al lugar seleccionado
-            if (userLatitude != null && userLongitude != null) {
-              polylines.add(
-                Polyline(
-                  polylineId: const PolylineId(
-                      'route'), // Un ID único para la polilínea
-                  points: [
-                    LatLng(userLatitude!,
-                        userLongitude!), // Punto de inicio (ubicación del usuario)
-                    place.coordinates // Punto de destino (lugar seleccionado)
-                  ],
-                  color: Colors.blue, // Color de la polilínea
-                  width: 5, // Ancho de la polilínea
-                ),
-              );
-            }
 
             // Centrar el mapa en el lugar seleccionado
             mapController.animateCamera(
@@ -310,7 +294,7 @@ class _MapScreenState extends State<MapScreen> {
                 decodePolyline(bestRoutePolyline);
             polylines.add(
               Polyline(
-                polylineId: PolylineId('best_route'),
+                polylineId: const PolylineId('best_route'),
                 points: bestRouteCoordinates,
                 color: Colors.green, // Mejor ruta en verde
                 width: 5,
@@ -445,6 +429,7 @@ class _MapScreenState extends State<MapScreen> {
             ),
           ),
         ),
+        if(markers.isNotEmpty)
         Positioned(
           top: size.height * 0.4,
           right: 16,

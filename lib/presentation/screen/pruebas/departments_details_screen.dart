@@ -7,7 +7,6 @@ import 'package:iconsax/iconsax.dart';
 import '../pruebas/maps_screen.dart'; // Importa la nueva pantalla
 import '../pruebas/widgets_details/place_adress.dart';
 import '../pruebas/widgets_details/place_bussines.dart';
-import '../pruebas/widgets_details/place_geometry.dart';
 import '../pruebas/widgets_details/place_name.dart';
 import '../pruebas/widgets_details/place_phonenumber.dart';
 import '../pruebas/widgets_details/place_photos.dart';
