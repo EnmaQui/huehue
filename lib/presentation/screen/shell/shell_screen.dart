@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:huehue/presentation/screen/calculator/CalculatorScreen.dart';
 import 'package:huehue/presentation/screen/explorer/explorar_screen.dart';
 import 'package:huehue/presentation/screen/home/home_screen.dart';
 import 'package:huehue/presentation/screen/map/map_screen.dart';
@@ -25,6 +26,7 @@ class _ShellScreenState extends State<ShellScreen> {
         physics: const NeverScrollableScrollPhysics(),
         children: const [
           PruebasScreen(),
+          CalculatorScreen(),
           HomeScreen(),
           MapScreen(),
           ExplorarScreen(),
@@ -76,14 +78,16 @@ class _ShellScreenState extends State<ShellScreen> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      // _pageController.jumpToPage(1);
+                      _pageController.jumpToPage(1);
                     },
                     child: Container(
                       width: width,
                       color: const Color.fromARGB(0, 236, 94, 94),
                       height: 36,
-                      child:
-                          const Icon(Iconsax.calculator, color: Colors.white),
+                      child: const Icon(
+                        Iconsax.calculator,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ],
