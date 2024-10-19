@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:huehue/app.routes.dart';
+import 'package:huehue/presentation/blocs/calculator/calculator_bloc.dart';
 import 'package:huehue/presentation/blocs/place/place_bloc.dart';
 import 'package:huehue/presentation/screen/shell/shell_screen.dart';
 import 'package:huehue/utils/service.locator.utils.dart';
@@ -54,6 +55,9 @@ class _MyAppState extends State<MyApp> {
       providers: [
         BlocProvider(
           create: (context) => serviceLocator<PlaceBloc>(),
+        ),
+        BlocProvider(
+          create: (context) => CalculatorBloc(),
         ),
       ],
       child: MaterialApp(

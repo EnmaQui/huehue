@@ -4,6 +4,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:huehue/const/data.const.dart';
 import 'package:huehue/domain/entity/place/PlaceEntity.dart';
 import 'package:huehue/enum/StatusRequestEnum.dart';
+import 'package:huehue/presentation/blocs/calculator/calculator_bloc.dart';
 import 'package:huehue/presentation/blocs/place/place_bloc.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:responsive_grid/responsive_grid.dart';
@@ -15,6 +16,8 @@ class MapDetailsPlace extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final calculatorBloc = context.read<CalculatorBloc>();
+
     return DraggableScrollableSheet(
       snap: true,
       snapSizes: const [0.4, 0.6],
@@ -63,7 +66,9 @@ class MapDetailsPlace extends StatelessWidget {
                       ),
                       ResponsiveGridCol(
                         child: BlocBuilder<PlaceBloc, PlaceState>(
-                          buildWhen: (previous, current) => previous.statusRequestPlace != current.statusRequestPlace,
+                          buildWhen: (previous, current) =>
+                              previous.statusRequestPlace !=
+                              current.statusRequestPlace,
                           builder: (context, state) {
                             if (state.statusRequestPlace ==
                                 StatusRequestEnum.pending) {
@@ -103,10 +108,25 @@ class MapDetailsPlace extends StatelessWidget {
                                       style:
                                           const TextStyle(color: Colors.grey),
                                     ),
-                                    trailing: IconButton(
-                                      icon: const Icon(Iconsax.heart),
-                                      onPressed: () {
-                                        // onPlaceSelected(place, position); // Pasa la … del lugar seleccionado
+                                    trailing:
+                                        BlocBuilder<CalculatorBloc, CalculatorState>(
+                                      builder: (context, state) {
+                                        return IconButton(
+                                          icon: !calculatorBloc.currentPlacId.contains(element.placeId) ? const Icon(
+                                            Iconsax.heart,
+                                            color: Colors.black,
+                                          ) : const Icon(
+                                            Iconsax.heart5,
+                                            color: Colors.blue,
+                                          ),
+                                          onPressed: () {
+                                            calculatorBloc.add(
+                                              TogglePlaceToCalculator(
+                                                  place: element),
+                                            );
+                                            // onPlaceSelected(place, position); // Pasa la … del lugar seleccionado
+                                          },
+                                        );
                                       },
                                     ),
                                     onTap: () {

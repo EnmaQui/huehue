@@ -438,7 +438,7 @@ class _MapScreenState extends State<MapScreen> {
               if (markers.isNotEmpty) {
                 Marker destinationMarker = markers.first;
                 Position position = await Geolocator.getCurrentPosition(
-                    desiredAccuracy: LocationAccuracy.high);
+                    desiredAccuracy: LocationAccuracy.high,);
 
                 await _getDirections(
                   LatLng(position.latitude, position.longitude),
