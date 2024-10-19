@@ -110,25 +110,74 @@ class _PruebasScreenState extends State<PruebasScreen>
                 const SizedBox(height: 10),
                 SizedBox(
                   height: size.height * 0.30,
-                  child: BaseListWidget(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 12,
-                      ),
-                      scrollDirection: Axis.horizontal,
-                      itemCount: 10,
-                      itemBuilder: (context, index) {
-                        return Center(
-                          child: Container(
-                            width: size.width * 0.7,
-                            height: size.height * 0.3,
-                            decoration: BoxDecoration(
-                              color: Colors.green,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
+                  child: BlocBuilder<PlaceBloc, PlaceState>(
+                    builder: (context, state) {
+                      if (state.statusRequestImageUrlsByPlace ==
+                          StatusRequestEnum.pending) {
+                        return const Center(
+                          child: CircularProgressIndicator.adaptive(),
                         );
-                      }),
+                      }
+
+                      if (state.imageUrlsByPlace.isEmpty) {
+                        return const SizedBox();
+                      }
+
+                      return SizedBox(
+                        child: BaseListWidget(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 12,
+                          ),
+                          scrollDirection: Axis.horizontal,
+                          itemCount: state.imageUrlsByPlace.length,
+                          itemBuilder: (context, index) {
+                            final nameDepartament =
+                                departamentos[index]['name'] as String;
+                            final image = state.imageUrlsByPlace[index];
+                            return Center(
+                              child: SizedBox(
+                                width: size.width * 0.5,
+                                height: size.height * 0.3,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(12),
+                                      child: CachedNetworkImage(
+                                        width: double.infinity,
+                                        height: size.height * 0.20,
+                                        imageUrl: image,
+                                        fit: BoxFit.cover,
+                                        progressIndicatorBuilder:
+                                            (context, url, progress) =>
+                                                const Center(
+                                          child: CupertinoActivityIndicator(),
+                                        ),
+                                        errorWidget: (context, url, error) =>
+                                            const Center(
+                                          child: Icon(Icons.error),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 10),
+                                    Text(
+                                      nameDepartament,
+                                      textAlign: TextAlign.left,
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      );
+                    },
+                  ),
                 ),
               ],
             ),

@@ -65,14 +65,16 @@ class _MyAppState extends State<MyApp> {
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           appBarTheme: const AppBarTheme(
-              elevation: 0,
-              scrolledUnderElevation: 0,
-              backgroundColor: Colors.transparent,
-              systemOverlayStyle: SystemUiOverlayStyle(
-                  statusBarIconBrightness: Brightness.dark)),
+            elevation: 0,
+            scrolledUnderElevation: 0,
+            backgroundColor: Colors.transparent,
+            systemOverlayStyle:
+                SystemUiOverlayStyle(statusBarIconBrightness: Brightness.dark),
+          ),
           applyElevationOverlayColor: false,
           primarySwatch: Colors.blue,
           fontFamily: 'FranklinGothic',
+          scaffoldBackgroundColor: const Color(0xFF243642),
         ),
         routes: appRoutes,
         initialRoute: ShellScreen.routeName,
