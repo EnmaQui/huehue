@@ -64,6 +64,7 @@ class MapDetailsPlace extends StatelessWidget {
                       ),
                       ResponsiveGridCol(
                         child: BlocBuilder<PlaceBloc, PlaceState>(
+                          buildWhen: (previous, current) => previous.statusRequestPlace != current.statusRequestPlace,
                           builder: (context, state) {
                             if (state.statusRequestPlace ==
                                 StatusRequestEnum.pending) {
@@ -78,6 +79,12 @@ class MapDetailsPlace extends StatelessWidget {
                               );
                             }
 
+                            state.nearbyPlaces.sort((a, b) {
+                              dynamic ratingA = a.rating ?? 0.0;
+                              dynamic ratingB = b.rating ?? 0.0;
+
+                              return ratingB.compareTo(ratingA);
+                            });
                             return Column(
                               children: state.nearbyPlaces.map((element) {
                                 return Card(
@@ -97,16 +104,21 @@ class MapDetailsPlace extends StatelessWidget {
                                       style:
                                           const TextStyle(color: Colors.grey),
                                     ),
-                                    // trailing: place['rating'] != null
-                                    //     ? Row(
-                                    //         mainAxisSize: MainAxisSize.min,
-                                    //         children: [
-                                    //           const Icon(Icons.star, color: Colors.amber, size: 20),
-                                    //           Text(place['rating'].toString(),
-                                    //               style: const TextStyle(fontSize: 16)),
-                                    //         ],
-                                    //       )
-                                    //     : null,
+                                    trailing: element.rating != null
+                                        ? Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              const Icon(Icons.star,
+                                                  color: Colors.amber,
+                                                  size: 20),
+                                              Text(
+                                                element.rating.toString(),
+                                                style: const TextStyle(
+                                                    fontSize: 16),
+                                              ),
+                                            ],
+                                          )
+                                        : null,
                                     onTap: () {
                                       // onPlaceSelected(place, position); // Pasa la posición del lugar seleccionado
                                       onTap(element, element.coordinates);
@@ -122,7 +134,8 @@ class MapDetailsPlace extends StatelessWidget {
                                           )
                                         : const CircleAvatar(
                                             backgroundColor: Colors.grey,
-                                            child: Icon(Icons.place, color: Colors.white),
+                                            child: Icon(Icons.place,
+                                                color: Colors.white),
                                           ),
                                   ),
                                 );

@@ -40,7 +40,6 @@ class GoogleMapDataSourceImpl extends GoogleMapDataSource {
 
     final response = await _dio.get(url);
 
-    print(url);
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       return (response.data['results'] as List)

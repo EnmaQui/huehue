@@ -11,8 +11,6 @@ import 'package:huehue/presentation/screen/pruebas/modal/MapDetailsPlace.dart';
 
 import '../pruebas/widgets_maps/categorias_widget.dart';
 import '../pruebas/widgets_maps/detalles_widget.dart';
-import '../pruebas/widgets_maps/lista_lugares.dart';
-import '../pruebas/widgets_maps/map_widget.dart';
 
 class MapScreen extends StatefulWidget {
   final double latitude;
@@ -275,24 +273,6 @@ class _MapScreenState extends State<MapScreen> {
               zoom: 15,
             ),
              markers: markers,
-            // markers: state.pulperiasByRadius
-            //     .map(
-            //       (element) => Marker(
-            //         markerId: MarkerId('pulperia_${element.id}'),
-            //         position: element.coordinates ?? const LatLng(0, 0),
-            //         icon: MapUtils.getMapIconByOwnerId(element.ownerId ?? 0),
-            //         infoWindow: InfoWindow(
-            //           title: element.name,
-            //         ),
-            //         onTap: () {
-            //           context
-            //               .read<PulperiaBloc>()
-            //               .add(GetPolylinePointEvent(pulperia: element));
-            //         },
-            //       ),
-            //     )
-            //     .toSet(),
-            // polylines: state.polylines ?? {},
             zoomControlsEnabled: false,
             myLocationButtonEnabled: false,
             compassEnabled: false,
